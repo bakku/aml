@@ -1,23 +1,23 @@
 package dev.bakku.aml.language.runtime;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @ExportLibrary(InteropLibrary.class)
 public class AMLSet implements TruffleObject {
-    private Set<Integer> set;
+    private final Set<Object> set;
 
-    private AMLSet(Set<Integer> set) {
+    private AMLSet(Set<Object> set) {
         this.set = set;
     }
 
-    public static AMLSet of(Integer... values) {
+    public static AMLSet of(Object... values) {
         return new AMLSet(Set.of(values));
     }
 
@@ -32,5 +32,25 @@ public class AMLSet implements TruffleObject {
         return set.stream()
             .map(Object::toString)
             .collect(Collectors.joining(", ", "{", "}"));
+    }
+
+    @ExportMessage
+    public boolean hasArrayElements() {
+        return true;
+    }
+
+    @ExportMessage
+    public Object readArrayElement(long index) {
+        return set.toArray()[(int) index];
+    }
+
+    @ExportMessage
+    public long getArraySize() {
+        return set.size();
+    }
+
+    @ExportMessage
+    public boolean isArrayElementReadable(long index) {
+        return index < this.getArraySize();
     }
 }

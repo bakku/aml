@@ -30,6 +30,12 @@ public class REPL {
                 continue;
             }
 
+            /*
+            Casting:
+                var set = new HashSet<>(retVal.as(new TypeLiteral<List<Integer>>() {}));
+                set.forEach(System.out::println);
+             */
+
             System.out.println("=> " + retVal);
         }
     }
