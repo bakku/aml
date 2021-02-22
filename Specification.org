@@ -1,0 +1,269 @@
+* AML Specification
+
+This document serves as an informal specification of AML (A mathematical language). It provides a high-level overview of all syntactic constructs of AML and its supported operations. Furthermore, it explains the grammar of the language.
+
+AML is an immutable, NULL-less, and dynamically typed programming language for writing concise mathematical expressions with the help of unicode.
+
+Currently AML offers capabilities for:
+
+- Loads of arithmetic operations or mathematical functions
+- Set theory
+- Logical expressions
+
+In the future, AML should furthermore support:
+
+- Vector operations
+- Matrix operations
+
+** Features
+
+Programs written in AML are evaluated from top to bottom. The last line of a program always returns the result of the whole execution.
+
+*** Comments
+
+Comments are written using a double dash:
+
+#+BEGIN_SRC
+-- I am a comment
+#+END_SRC
+
+*** Datatypes
+
+AML supports the following datatypes:
+
+#+BEGIN_SRC 
+-- numbers
+1
+1.3
+100,000,000.1231
+
+-- strings
+"a string"
+"another string"
+
+-- booleans
+⊥ -- false
+⊤ -- true
+
+-- fractions
+1/2
+123/412
+12/123/124/122
+
+-- sets
+{1, 2, 3, 4}
+{"hi", 1, "bye", "two", 1/4}
+#+END_SRC
+
+*** Expressions
+
+The foundational construct in AML is an expression. There are many different types of operations in AML (a complete list will be shown in the next section) which can be used to build expressions. Here are some examples:
+
+#+BEGIN_SRC
+-- Intersect two sets
+{1, 2, 3} ∩ {3, 4, 5}
+
+-- Add two fractions
+1/2 + 4/3
+
+-- Predicates
+(A ∧ B) ⊕ (C ∨ ¬D)
+∀(x ∈ X: x ≥ 10)
+#+END_SRC
+
+*** Assignments
+
+With an assignment the result of an expression is stored in a variable. The return value of an assignment is the value which was assigned.
+
+#+BEGIN_SRC 
+A ← 1/2 · 1/2
+#+END_SRC
+
+*** Conditionals
+
+AML supports a standard *if-else* condition similar to other programming languages. In AML the conditional expression must result in a boolean, only true or false are really true or false.
+
+#+BEGIN_SRC 
+if x = 5
+  x ÷ 2
+else
+  x · 2
+end
+#+END_SRC
+
+*** Functions
+
+A function is an assemblage of expressions where the result of the last expression of the function marks the returned value of the function.
+
+#+BEGIN_SRC 
+function allEven(S)
+  ∀(x ∈ S: x mod 2 = 0)
+end
+
+function halfOfCircleArea(r)
+  area ← π · r ^ 2
+  1/2 · area
+end
+
+-- call a function
+allEven({1, 2, 3})
+#+END_SRC
+
+*** Libraries
+
+A library groups multiple functions together in order to use them from a different host language. A library is comparable to a class containing static methods in the land of OOP languages.
+
+#+BEGIN_SRC 
+library circleFunctions
+  function area(r)
+    π · r ^ 2
+  end
+
+  function diameter(r)
+    2 · r
+  end
+end
+
+export circleFunctions
+#+END_SRC
+
+** List of operations
+
+*** Operations for numbers/fractions
+
+#+BEGIN_SRC 
+-- addition
+1 + 2
+
+-- subtraction
+3 - 1
+
+-- multiplication
+2 · 4
+
+-- division
+4 ÷ 2
+
+-- modulo
+4 mod 2
+
+-- exponentation
+2 ^ 4
+
+-- floor
+⌊1.1⌋
+
+-- ceil
+⌈1.4⌉
+
+-- factorial
+5!
+
+-- negation
+-5
+
+-- logarithm base 10
+log(5)
+
+-- natural logarithm
+ln(5)
+#+END_SRC
+
+*** Comparisons
+
+#+BEGIN_SRC 
+-- equal to
+x = 2
+
+-- unequal to
+x ≠ 2
+
+-- less than
+x < 2
+
+-- greater than
+x > 2
+
+-- less or equal than
+x ≤ 2
+
+-- greater or equal than
+x ≥ 2
+#+END_SRC
+
+*** Logical symbols
+
+#+BEGIN_SRC 
+-- implication
+x = 2 ⇒ x ^ 2 = 4
+
+-- equivalence
+x = y ⇔ y = x
+
+-- negation
+¬(x = 5)
+
+-- conjunction
+x < 4 ∧ x > 2 ∧ x = 3
+
+-- disjunction
+n ≥ 4 ∨ n ≤ 2 ⇔ n ≠ 3
+
+-- exclusive disjunction (XOR)
+(¬B) ⊕ A
+
+-- universal quantification (in combination with sets)
+∀(n ∈ S: n ^ 2 ≥ n)
+
+-- existential quantification (in combination with sets)
+∃(n ∈ S: n mod 2 = 0)
+
+-- uniqueness quantification (exactly one element should fulfill the condition) (in combination with sets
+∃!(n ∈ S: n + 5 = 2n)
+#+END_SRC
+
+*** Set operations
+
+#+BEGIN_SRC 
+-- union
+A ∪ B
+
+-- intersection
+A ∩ B
+
+-- set difference
+U \ A 
+
+-- symmetric difference
+A △ B
+
+-- subset
+A ⊂ B
+
+-- not a subset
+A ⊄ B
+
+-- subset or equal to
+A ⊆ B
+
+-- not a subset or equal to
+A ⊈ B
+
+-- superset
+A ⊃ B
+
+-- not a superset
+A ⊅ B
+
+-- superset or equal to
+A ⊇ B
+
+-- not a superset or equal to
+A ⊉ B
+
+-- cardinality
+|A|
+
+-- membership
+1 ∈ A
+#+END_SRC
