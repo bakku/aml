@@ -37,10 +37,6 @@ AML supports the following datatypes:
 1.3
 100,000,000.1231
 
--- strings
-"a string"
-"another string"
-
 -- booleans
 ⊥ -- false
 ⊤ -- true
@@ -48,11 +44,10 @@ AML supports the following datatypes:
 -- fractions
 1/2
 123/412
-12/123/124/122
 
 -- sets
 {1, 2, 3, 4}
-{"hi", 1, "bye", "two", 1/4}
+{1, 1/4}
 #+END_SRC
 
 *** Expressions
@@ -123,8 +118,6 @@ library circleFunctions
     2 · r
   end
 end
-
-export circleFunctions
 #+END_SRC
 
 ** List of operations
@@ -234,9 +227,6 @@ A ∩ B
 -- set difference
 U \ A 
 
--- symmetric difference
-A △ B
-
 -- subset
 A ⊂ B
 
@@ -263,7 +253,4 @@ A ⊉ B
 
 -- cardinality
 |A|
-
--- membership
-1 ∈ A
 #+END_SRC
