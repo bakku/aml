@@ -1,7 +1,7 @@
 package dev.bakku.aml.language.nodes;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
-import dev.bakku.aml.language.runtime.AMLSet;
+import dev.bakku.aml.language.runtime.types.AMLSet;
 
 public class AMLSetLiteralNode extends AMLBaseNode {
     private AMLSet amlSet;

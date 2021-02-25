@@ -9,7 +9,8 @@ import com.oracle.truffle.api.source.Source;
 
 public class AMLSyntaxTreeParser {
     public static AMLBaseNode parseTree(Source source) {
-        var lexer = new AMLLexer(CharStreams.fromString(source.getCharacters().toString()));
+        var code = source.getCharacters().toString();
+        var lexer = new AMLLexer(CharStreams.fromString(code + "\n"));
         var stream = new CommonTokenStream(lexer);
         var parser = new AMLParser(stream);
         var visitor = new AMLAntlrVisitor();

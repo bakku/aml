@@ -21,6 +21,10 @@ public class REPL {
                 break;
             }
 
+            if (code.strip().equals("")) {
+                continue;
+            }
+
             Value retVal;
 
             try {

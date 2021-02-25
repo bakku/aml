@@ -1,4 +1,4 @@
-package dev.bakku.aml.language.runtime;
+package dev.bakku.aml.language.runtime.types;
 
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.TruffleObject;
