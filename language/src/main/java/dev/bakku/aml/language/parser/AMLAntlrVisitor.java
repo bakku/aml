@@ -38,6 +38,28 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
     }
 
     @Override
+    public AMLBaseNode visitFunction(AMLParser.FunctionContext ctx) {
+        var argumentNames = ctx.params()
+            .IDENTIFIER()
+            .stream()
+            .map(i -> i.getSymbol().getText())
+            .toArray(String[]::new);
+
+        inNestedScope = true;
+        var bodyNode = expressionsToProgram(ctx.expression());
+        inNestedScope = false;
+
+        return new AMLDefineFunctionNode(
+            ctx.IDENTIFIER().getSymbol().getText(),
+            argumentNames,
+            bodyNode,
+            context.getGlobalFrame(),
+            this.context.getGlobalFrameDescriptor()
+                .findOrAddFrameSlot(ctx.IDENTIFIER().getSymbol().getText())
+        );
+    }
+
+    @Override
     public AMLBaseNode visitExpression(AMLParser.ExpressionContext ctx) {
         if (ctx.ifcond() != null) {
             return this.visitIfcond(ctx.ifcond());
@@ -58,7 +80,12 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
     @Override
     public AMLBaseNode visitAssignment(AMLParser.AssignmentContext ctx) {
         if (ctx.expression() != null) {
-            if (!this.inNestedScope) {
+            if (this.inNestedScope) {
+                return AMLWriteLocalValueNodeGen.create(
+                    this.visitExpression(ctx.expression()),
+                    ctx.IDENTIFIER().getSymbol().getText()
+                );
+            } else {
                 var frameSlot = this.context.getGlobalFrame()
                     .getFrameDescriptor()
                     .findOrAddFrameSlot(ctx.IDENTIFIER().getSymbol().getText());
@@ -350,7 +377,12 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
         if (ctx.expression() != null) {
             return this.visitExpression(ctx.expression());
         } else if (ctx.IDENTIFIER() != null) {
-            if (!this.inNestedScope) {
+            if (this.inNestedScope) {
+                return AMLReadLocalValueNodeGen.create(
+                    this.context.getGlobalFrame(),
+                    ctx.IDENTIFIER().getSymbol().getText()
+                );
+            } else {
                 return AMLReadGlobalValueNodeGen.create(
                     this.context.getGlobalFrame(),
                     this.context.getGlobalFrame()
@@ -358,9 +390,26 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
                         .findOrAddFrameSlot(ctx.IDENTIFIER().getSymbol().getText())
                 );
             }
+        } else if (ctx.call() != null) {
+            return this.visitCall(ctx.call());
         }
 
         return this.visitNumber(ctx.number());
+    }
+
+    @Override
+    public AMLBaseNode visitCall(AMLParser.CallContext ctx) {
+        return new AMLCallNode(
+            this.context.getGlobalFrame(),
+            this.context
+                .getGlobalFrameDescriptor()
+                .findOrAddFrameSlot(ctx.IDENTIFIER().getSymbol().getText()),
+            ctx.arguments()
+                .logicEquivalence()
+                .stream()
+                .map(this::visitLogicEquivalence)
+                .toArray(AMLBaseNode[]::new)
+        );
     }
 
     @Override

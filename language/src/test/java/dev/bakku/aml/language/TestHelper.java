@@ -10,6 +10,6 @@ public class TestHelper {
         var source = Source.newBuilder("aml", code, "testcode")
             .build();
         var node = AMLSyntaxTreeParser.parseTree(new AMLContext(), source);
-        return Truffle.getRuntime().createCallTarget(new AMLRootNode(null, node)).call();
+        return Truffle.getRuntime().createCallTarget(new AMLRootNode(node)).call();
     }
 }

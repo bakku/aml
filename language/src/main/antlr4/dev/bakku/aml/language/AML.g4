@@ -3,7 +3,7 @@ grammar AML;
 program          : (library | function | expression+)+ ;
 library          : LIBRARY function+ END ;
 function         : FUNCTION IDENTIFIER '(' params ')' expression+ END ;
-params           : IDENTIFIER* ;
+params           : IDENTIFIER? | (IDENTIFIER ',')+ IDENTIFIER ;
 expression       : (ifcond | assignment) ;
 ifcond           : IF logicEquivalence THEN thenBranch ELSE elseBranch END ;
 thenBranch       : expression+ ;
@@ -46,7 +46,8 @@ setPrimary       : call | setLiteral | setEllipsis | IDENTIFIER | '(' expression
 setLiteral       : '{' ((NUMBER ',')* NUMBER)? '}' ;
 setEllipsis      : '{' NUMBER ',' '...' ',' NUMBER '}' ;
 
-call             : IDENTIFIER '(' params ')' ;
+call             : IDENTIFIER '(' arguments ')' ;
+arguments        : logicEquivalence? | (logicEquivalence ',')+ logicEquivalence ;
 
 SEMICOLON  : ';' ;
 EQ         : '=' ;
@@ -66,7 +67,7 @@ FUNCTION   : 'function' ;
 IF         : 'if' ;
 THEN       : 'then' ;
 ELSE       : 'else' ;
-NUMBER     : [0-9,]+ ;
+NUMBER     : [0-9]+ ;
 IDENTIFIER : ([a-zA-Z] [a-zA-Z0-9]* | CONSTANT) ;
 CONSTANT   : 'π' ;
 WHITESPACE : (' ' | '\t') -> skip ;

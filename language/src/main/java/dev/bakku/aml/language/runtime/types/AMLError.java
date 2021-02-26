@@ -13,8 +13,19 @@ public class AMLError implements TruffleObject {
         this.message = message;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
     @ExportMessage
     public Object toDisplayString(boolean allowSideEffects) {
         return "Runtime error: " + message;
+    }
+
+    @Override
+    public String toString() {
+        return "AMLError{" +
+            "message='" + message + '\'' +
+            '}';
     }
 }

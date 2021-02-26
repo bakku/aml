@@ -37,11 +37,11 @@ public class AMLLanguage extends TruffleLanguage<AMLContext> {
         try {
             var node = AMLSyntaxTreeParser.parseTree(getCurrentContext(AMLLanguage.class), request.getSource());
             return Truffle.getRuntime().createCallTarget(
-                new AMLRootNode(this, node)
+                new AMLRootNode(node)
             );
         } catch (AMLParserException ex) {
             return Truffle.getRuntime().createCallTarget(
-                new AMLRootNode(this, new AMLReturnErrorNode(new AMLError(ex.getMessage())))
+                new AMLRootNode(new AMLReturnErrorNode(new AMLError(ex.getMessage())))
             );
         }
     }

@@ -1,7 +1,6 @@
 package dev.bakku.aml.language;
 
 import ch.obermuhlner.math.big.BigDecimalMath;
-import dev.bakku.aml.language.runtime.AMLRuntimeException;
 import dev.bakku.aml.language.runtime.types.AMLError;
 import dev.bakku.aml.language.runtime.types.AMLNumber;
 import org.junit.Test;

@@ -24,9 +24,7 @@ public class AMLNumber implements TruffleObject {
     }
 
     public static AMLNumber of(String number) {
-        return new AMLNumber(
-            new BigDecimal(number.replaceAll(",", ""))
-        );
+        return new AMLNumber(new BigDecimal(number));
     }
 
     public static AMLNumber of(int number) {
