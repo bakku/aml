@@ -1,6 +1,5 @@
 package dev.bakku.aml.language.parser;
 
-import com.oracle.truffle.api.frame.FrameSlot;
 import dev.bakku.aml.language.AMLBaseVisitor;
 import dev.bakku.aml.language.AMLContext;
 import dev.bakku.aml.language.AMLLexer;
@@ -9,11 +8,11 @@ import dev.bakku.aml.language.nodes.*;
 import dev.bakku.aml.language.runtime.types.AMLNumber;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.beans.Expression;
 import java.util.List;
 
 public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
     private final AMLContext context;
+    private boolean inNestedScope = false;
 
     public AMLAntlrVisitor(AMLContext context) {
         this.context = context;
@@ -58,6 +57,20 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
 
     @Override
     public AMLBaseNode visitAssignment(AMLParser.AssignmentContext ctx) {
+        if (ctx.expression() != null) {
+            if (!this.inNestedScope) {
+                var frameSlot = this.context.getGlobalFrame()
+                    .getFrameDescriptor()
+                    .findOrAddFrameSlot(ctx.IDENTIFIER().getSymbol().getText());
+
+                return AMLWriteGlobalValueNodeGen.create(
+                    this.visitExpression(ctx.expression()),
+                    this.context.getGlobalFrame(),
+                    frameSlot
+                );
+            }
+        }
+
         return this.visitLogicEquivalence(ctx.logicEquivalence());
     }
 
@@ -337,11 +350,14 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
         if (ctx.expression() != null) {
             return this.visitExpression(ctx.expression());
         } else if (ctx.IDENTIFIER() != null) {
-            return AMLReadValueNodeGen.create(
-                this.context.getGlobalFrame()
-                    .getFrameDescriptor()
-                    .findOrAddFrameSlot(ctx.IDENTIFIER().getSymbol().getText())
-            );
+            if (!this.inNestedScope) {
+                return AMLReadGlobalValueNodeGen.create(
+                    this.context.getGlobalFrame(),
+                    this.context.getGlobalFrame()
+                        .getFrameDescriptor()
+                        .findOrAddFrameSlot(ctx.IDENTIFIER().getSymbol().getText())
+                );
+            }
         }
 
         return this.visitNumber(ctx.number());

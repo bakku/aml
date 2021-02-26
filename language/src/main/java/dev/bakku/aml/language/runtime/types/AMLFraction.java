@@ -88,4 +88,12 @@ public class AMLFraction implements TruffleObject {
         AMLFraction other = (AMLFraction) o;
         return this.toNumber().equals(other.toNumber());
     }
+
+    @Override
+    public String toString() {
+        return "AMLFraction{" +
+            "numerator=" + numerator +
+            ", denominator=" + denominator +
+            '}';
+    }
 }

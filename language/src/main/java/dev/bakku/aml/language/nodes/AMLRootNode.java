@@ -5,6 +5,8 @@ import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.RootNode;
+import dev.bakku.aml.language.runtime.AMLRuntimeException;
+import dev.bakku.aml.language.runtime.types.AMLError;
 
 public class AMLRootNode extends RootNode {
     @Child
@@ -17,6 +19,10 @@ public class AMLRootNode extends RootNode {
 
     @Override
     public Object execute(VirtualFrame frame) {
-        return root.executeGeneric(frame);
+        try {
+            return root.executeGeneric(frame);
+        } catch (AMLRuntimeException ex) {
+            return new AMLError(ex.getMessage());
+        }
     }
 }

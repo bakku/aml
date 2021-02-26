@@ -15,6 +15,7 @@ import java.util.Objects;
 @ExportLibrary(InteropLibrary.class)
 public class AMLNumber implements TruffleObject {
     private static final int PRECISION = 100;
+    public static final AMLNumber PI = AMLNumber.of(BigDecimalMath.pi(new MathContext(PRECISION)));
 
     private final BigDecimal number;
 
@@ -32,6 +33,10 @@ public class AMLNumber implements TruffleObject {
         return new AMLNumber(
             new BigDecimal(number)
         );
+    }
+
+    public static AMLNumber of(BigDecimal number) {
+        return new AMLNumber(number);
     }
 
     public AMLNumber add(AMLNumber other) {
@@ -106,5 +111,12 @@ public class AMLNumber implements TruffleObject {
     @Override
     public int hashCode() {
         return Objects.hash(number);
+    }
+
+    @Override
+    public String toString() {
+        return "AMLNumber{" +
+            "number=" + number +
+            '}';
     }
 }

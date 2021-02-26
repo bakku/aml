@@ -1,36 +1,38 @@
 package dev.bakku.aml.language;
 
+import ch.obermuhlner.math.big.BigDecimalMath;
 import dev.bakku.aml.language.runtime.AMLRuntimeException;
 import dev.bakku.aml.language.runtime.types.AMLError;
 import dev.bakku.aml.language.runtime.types.AMLNumber;
 import org.junit.Test;
 
+import java.math.MathContext;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class AMLIfTests {
+public class AMLGlobalVariableTests {
     @Test
-    public void testThenBranch() {
-        var code = "if 1 = 1 then 3 + 4 ; else 5 - 4 ; end";
-
+    public void readGlobalVariable() {
+        var code = "π ;";
         var result = TestHelper.evalCode(code);
 
         assertTrue(result instanceof AMLNumber);
-        assertEquals(AMLNumber.of(7), result);
+        assertEquals(AMLNumber.of(BigDecimalMath.pi(new MathContext(100))), result);
     }
 
     @Test
-    public void testElseBranch() {
-        var code = "if 1 ≠ 1 then 3 + 4 ; else 5 - 4 ; end";
+    public void writeGlobalVariable() {
+        var code = "A ← 1 + 2 ; A + 3 ;";
         var result = TestHelper.evalCode(code);
 
         assertTrue(result instanceof AMLNumber);
-        assertEquals(AMLNumber.of(1), result);
+        assertEquals(AMLNumber.of(6), result);
     }
 
     @Test
-    public void testNonBooleanCondition() {
-        var code = "if 1 then 3 + 4 ; else 5 - 4 ; end";
+    public void variablesShouldBeImmutable() {
+        var code = "A ← 1 + 2 ; A ← 4 ;";
         var result = TestHelper.evalCode(code);
 
         assertTrue(result instanceof AMLError);
