@@ -1,11 +1,13 @@
 grammar AML;
 
-program          : (library | function | (expression NEWLINE+))+ ;
-library          : LIBRARY NEWLINE? function+ END NEWLINE?;
-function         : FUNCTION IDENTIFIER '(' params ')' NEWLINE* (expression NEWLINE+)+ END NEWLINE*;
+program          : (library | function | expression+)+ ;
+library          : LIBRARY function+ END ;
+function         : FUNCTION IDENTIFIER '(' params ')' expression+ END ;
 params           : IDENTIFIER* ;
-expression       : (ifcond | assignment) ;
-ifcond           : IF logicOr expression+ ELSE expression+ END ;
+expression       : (ifcond | assignment SEMICOLON) ;
+ifcond           : IF logicEquivalence THEN thenBranch ELSE elseBranch END ;
+thenBranch       : expression+ ;
+elseBranch       : expression+ ;
 assignment       : (IDENTIFIER '←' expression) | logicEquivalence ;
 logicEquivalence : logicImplication ('⇔' logicImplication)* ;
 logicImplication : logicOr ('⇒' logicOr)* ;
@@ -46,6 +48,7 @@ setEllipsis      : '{' NUMBER ',' '...' ',' NUMBER '}' ;
 
 call             : IDENTIFIER '(' params ')' ;
 
+SEMICOLON  : ';' ;
 EQ         : '=' ;
 NEQ        : '≠' ;
 LT         : '<' ;
@@ -61,9 +64,10 @@ LIBRARY    : 'library' ;
 END        : 'end' ;
 FUNCTION   : 'function' ;
 IF         : 'if' ;
+THEN       : 'then' ;
 ELSE       : 'else' ;
 NUMBER     : [0-9,]+ ;
 IDENTIFIER : [a-zA-Z] [a-zA-Z0-9]* ;
 WHITESPACE : (' ' | '\t') -> skip ;
 COMMENT    : '--' .*? NEWLINE -> skip;
-NEWLINE    : '\r'? '\n';
+NEWLINE    : '\r'? '\n' -> skip;

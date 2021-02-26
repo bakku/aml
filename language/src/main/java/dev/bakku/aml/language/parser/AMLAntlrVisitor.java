@@ -1,21 +1,59 @@
 package dev.bakku.aml.language.parser;
 
+import com.oracle.truffle.api.frame.FrameSlot;
 import dev.bakku.aml.language.AMLBaseVisitor;
+import dev.bakku.aml.language.AMLContext;
 import dev.bakku.aml.language.AMLLexer;
 import dev.bakku.aml.language.AMLParser;
 import dev.bakku.aml.language.nodes.*;
 import dev.bakku.aml.language.runtime.types.AMLNumber;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.beans.Expression;
+import java.util.List;
+
 public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
+    private final AMLContext context;
+
+    public AMLAntlrVisitor(AMLContext context) {
+        this.context = context;
+    }
+
     @Override
     public AMLBaseNode visitProgram(AMLParser.ProgramContext ctx) {
-        return this.visitExpression(ctx.expression(0));
+        var nodes = ctx.children
+            .stream()
+            // filter all newlines
+            .filter(c -> !(c instanceof TerminalNode))
+            .map(c -> {
+                if (c instanceof AMLParser.LibraryContext) {
+                    return this.visitLibrary((AMLParser.LibraryContext) c);
+                } else if (c instanceof AMLParser.FunctionContext) {
+                    return this.visitFunction((AMLParser.FunctionContext) c);
+                } else {
+                    return this.visitExpression((AMLParser.ExpressionContext) c);
+                }
+            }).toArray(AMLBaseNode[]::new);
+
+        return new AMLProgramNode(nodes);
     }
 
     @Override
     public AMLBaseNode visitExpression(AMLParser.ExpressionContext ctx) {
+        if (ctx.ifcond() != null) {
+            return this.visitIfcond(ctx.ifcond());
+        }
+
         return this.visitAssignment(ctx.assignment());
+    }
+
+    @Override
+    public AMLBaseNode visitIfcond(AMLParser.IfcondContext ctx) {
+        return new AMLIfNode(
+            this.visitLogicEquivalence(ctx.logicEquivalence()),
+            expressionsToProgram(ctx.thenBranch().expression()),
+            expressionsToProgram(ctx.elseBranch().expression())
+        );
     }
 
     @Override
@@ -298,6 +336,12 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
     public AMLBaseNode visitNumPrimary(AMLParser.NumPrimaryContext ctx) {
         if (ctx.expression() != null) {
             return this.visitExpression(ctx.expression());
+        } else if (ctx.IDENTIFIER() != null) {
+            return AMLReadValueNodeGen.create(
+                this.context.getGlobalFrame()
+                    .getFrameDescriptor()
+                    .findOrAddFrameSlot(ctx.IDENTIFIER().getSymbol().getText())
+            );
         }
 
         return this.visitNumber(ctx.number());
@@ -313,6 +357,14 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
 
         return new AMLNumberNode(
             AMLNumber.of(ctx.NUMBER(0).toString())
+        );
+    }
+
+    private AMLProgramNode expressionsToProgram(List<AMLParser.ExpressionContext> expressions) {
+        return new AMLProgramNode(
+            expressions.stream()
+                .map(this::visitExpression)
+                .toArray(AMLBaseNode[]::new)
         );
     }
 }

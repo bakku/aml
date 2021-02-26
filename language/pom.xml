@@ -33,6 +33,19 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>
+            --add-exports org.graalvm.truffle/com.oracle.truffle.api.nodes=ALL-UNNAMED
+            --add-exports org.graalvm.truffle/com.oracle.truffle.api.source=ALL-UNNAMED
+            --add-exports org.graalvm.truffle/com.oracle.truffle.api.frame=ALL-UNNAMED
+            --add-exports org.graalvm.truffle/com.oracle.truffle.api=ALL-UNNAMED
+            --add-exports org.graalvm.truffle/com.oracle.truffle.api.interop=ALL-UNNAMED
+          </argLine>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
         <version>3.1.1</version>
         <executions>
@@ -82,6 +95,12 @@
       <groupId>ch.obermuhlner</groupId>
       <artifactId>big-math</artifactId>
       <version>2.3.0</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

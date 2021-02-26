@@ -11,7 +11,7 @@ public class AMLNumberNode extends AMLBaseNode {
     }
 
     @Override
-    public Object execute(VirtualFrame frame) {
+    public Object executeGeneric(VirtualFrame frame) {
         return this.number;
     }
 }
