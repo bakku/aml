@@ -16,6 +16,7 @@
     <module>language</module>
     <module>repl</module>
     <module>runner</module>
+      <module>polyglot</module>
   </modules>
 
   <properties>

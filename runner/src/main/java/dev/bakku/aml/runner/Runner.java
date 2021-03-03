@@ -5,7 +5,6 @@ import org.graalvm.polyglot.Context;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.stream.Collectors;
 
 public class Runner {
     private static final String AML_ID = "aml";
