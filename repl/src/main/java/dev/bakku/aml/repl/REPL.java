@@ -3,6 +3,9 @@ package dev.bakku.aml.repl;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Value;
+import org.jline.reader.History;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
 
 import java.util.Scanner;
 
@@ -11,11 +14,11 @@ public class REPL {
 
     public static void main(String[] args) {
         var ctx = Context.create(AML_ID);
-        var scanner = new Scanner(System.in);
+        var reader = LineReaderBuilder.builder()
+            .build();
 
         while(true) {
-            System.out.print("> ");
-            var code = scanner.nextLine();
+            var code = reader.readLine("> ");
 
             if (code.toLowerCase().strip().equals("exit")) {
                 break;

@@ -3,7 +3,7 @@
 VERSION=21.0.0
 GRAAL_SDK_PATH="$HOME/.m2/repository/org/graalvm/sdk/graal-sdk/$VERSION/graal-sdk-$VERSION.jar"
 TRUFFLE_API_PATH="$HOME/.m2/repository/org/graalvm/truffle/truffle-api/$VERSION/truffle-api-$VERSION.jar"
-REPL_PATH="repl/target/repl-1.0-SNAPSHOT.jar"
+REPL_PATH="repl/target/repl.jar"
 LANGUAGE_PATH="language/target/language.jar"
 
 $JAVA_HOME/bin/java \
