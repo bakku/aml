@@ -1,0 +1,8 @@
+-- Implementation of newton's method:
+--   https://en.wikipedia.org/wiki/Newton's_method
+
+f: (x) → 2 · x ^ 2 - 2;
+f': (x) → 4 · x;
+newton: (x) → x - f(x) ÷ f'(x);
+newton100 ← newton ^ 100;
+newton100(3);
