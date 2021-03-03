@@ -5,6 +5,8 @@ import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 
+import java.util.Objects;
+
 @ExportLibrary(InteropLibrary.class)
 public class AMLBoolean implements TruffleObject {
     private static final AMLBoolean TRUE = new AMLBoolean(true);
@@ -26,6 +28,43 @@ public class AMLBoolean implements TruffleObject {
 
     public boolean isFalse() {
         return !value;
+    }
+
+    public AMLBoolean equivalence(AMLBoolean right) {
+        return of(this.equals(right));
+    }
+
+    public AMLBoolean implies(AMLBoolean right) {
+        if (this.isTrue()) {
+            return of(right.isTrue());
+        }
+
+        return of(true);
+    }
+
+    public AMLBoolean or(AMLBoolean right) {
+        return of(this.isTrue() || right.isTrue());
+    }
+
+    public AMLBoolean xor(AMLBoolean right) {
+        return of(!this.equals(right));
+    }
+
+    public AMLBoolean and(AMLBoolean right) {
+        return of(this.isTrue() && right.isTrue());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AMLBoolean that = (AMLBoolean) o;
+        return value == that.value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 
     @ExportMessage

@@ -131,27 +131,92 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
 
     @Override
     public AMLBaseNode visitLogicEquivalence(AMLParser.LogicEquivalenceContext ctx) {
-        return this.visitLogicImplication(ctx.logicImplication(0));
+        if (ctx.logicImplication().size() == 1) {
+            return this.visitLogicImplication(ctx.logicImplication(0));
+        } else {
+            AMLBaseNode ret = this.visitLogicImplication(ctx.logicImplication(0));
+
+            for (int i = 1; i < ctx.logicImplication().size(); i++) {
+                ret = AMLEquivalenceNodeGen.create(
+                    ret,
+                    this.visitLogicImplication(ctx.logicImplication(i))
+                );
+            }
+
+            return ret;
+        }
     }
 
     @Override
     public AMLBaseNode visitLogicImplication(AMLParser.LogicImplicationContext ctx) {
-        return this.visitLogicOr(ctx.logicOr(0));
+        if (ctx.logicOr().size() == 1) {
+            return this.visitLogicOr(ctx.logicOr(0));
+        } else {
+            AMLBaseNode ret = this.visitLogicOr(ctx.logicOr(0));
+
+            for (int i = 1; i < ctx.logicOr().size(); i++) {
+                ret = AMLImplicationNodeGen.create(
+                    ret,
+                    this.visitLogicOr(ctx.logicOr(i))
+                );
+            }
+
+            return ret;
+        }
     }
 
     @Override
     public AMLBaseNode visitLogicOr(AMLParser.LogicOrContext ctx) {
-        return this.visitLogicXOr(ctx.logicXOr(0));
+        if (ctx.logicXOr().size() == 1) {
+            return this.visitLogicXOr(ctx.logicXOr(0));
+        } else {
+            AMLBaseNode ret = this.visitLogicXOr(ctx.logicXOr(0));
+
+            for (int i = 1; i < ctx.logicXOr().size(); i++) {
+                ret = AMLOrNodeGen.create(
+                    ret,
+                    this.visitLogicXOr(ctx.logicXOr(i))
+                );
+            }
+
+            return ret;
+        }
     }
 
     @Override
     public AMLBaseNode visitLogicXOr(AMLParser.LogicXOrContext ctx) {
-        return this.visitLogicAnd(ctx.logicAnd(0));
+        if (ctx.logicAnd().size() == 1) {
+            return this.visitLogicAnd(ctx.logicAnd(0));
+        } else {
+            AMLBaseNode ret = this.visitLogicAnd(ctx.logicAnd(0));
+
+            for (int i = 1; i < ctx.logicAnd().size(); i++) {
+                ret = AMLXOrNodeGen.create(
+                    ret,
+                    this.visitLogicAnd(ctx.logicAnd(i))
+                );
+            }
+
+            return ret;
+        }
     }
 
     @Override
     public AMLBaseNode visitLogicAnd(AMLParser.LogicAndContext ctx) {
-        return this.visitEquality(ctx.equality(0));
+        if (ctx.equality().size() == 1) {
+            return this.visitEquality(ctx.equality(0));
+        } else {
+            AMLBaseNode ret = this.visitEquality(ctx.equality(0));
+
+            for (int i = 1; i < ctx.equality().size(); i++) {
+                ret = AMLAndNodeGen.create(
+                    ret,
+                    this.visitEquality(ctx.equality(i))
+                );
+            }
+
+            return ret;
+        }
     }
 
     @Override
