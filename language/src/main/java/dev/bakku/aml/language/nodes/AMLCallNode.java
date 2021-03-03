@@ -1,25 +1,21 @@
 package dev.bakku.aml.language.nodes;
 
-import com.oracle.truffle.api.frame.FrameSlot;
-import com.oracle.truffle.api.frame.FrameSlotTypeException;
 import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import dev.bakku.aml.language.runtime.AMLRuntimeException;
 import dev.bakku.aml.language.runtime.types.AMLError;
-import dev.bakku.aml.language.runtime.types.AMLFunction;
-
-import java.util.Objects;
+import dev.bakku.aml.language.runtime.types.AMLInvokable;
 
 public class AMLCallNode extends AMLBaseNode {
     private MaterializedFrame globalFrame;
-    private FrameSlot slot;
+    private String identifier;
 
     @Children
     private AMLBaseNode[] arguments;
 
-    public AMLCallNode(MaterializedFrame globalFrame, FrameSlot slot, AMLBaseNode[] arguments) {
+    public AMLCallNode(MaterializedFrame globalFrame, String identifier, AMLBaseNode[] arguments) {
         this.globalFrame = globalFrame;
-        this.slot = slot;
+        this.identifier = identifier;
         this.arguments = arguments;
     }
 
@@ -31,22 +27,23 @@ public class AMLCallNode extends AMLBaseNode {
             evaledArgs[i] = this.arguments[i].executeGeneric(frame);
         }
 
-        try {
-            var func = Objects.requireNonNull(this.globalFrame.getObject(this.slot));
+        var func = retrieveFunction(frame);
+        var result = func.invoke(evaledArgs);
 
-            if (!(func instanceof AMLFunction)) {
-                throw new AMLRuntimeException("attempt to call something which is not a function");
-            }
-
-            var result = ((AMLFunction) func).invoke(evaledArgs);
-
-            if (result instanceof AMLError) {
-                throw new AMLRuntimeException(((AMLError) result).getMessage());
-            }
-
-            return result;
-        } catch (FrameSlotTypeException | NullPointerException e) {
-            throw new AMLRuntimeException("function " + this.slot.getIdentifier().toString() + " does not exist");
+        if (result instanceof AMLError) {
+            throw new AMLRuntimeException(((AMLError) result).getMessage());
         }
+
+        return result;
+    }
+
+    private AMLInvokable retrieveFunction(VirtualFrame localFrame) {
+        var obj = AMLReadVariableNode.tryRead(localFrame, globalFrame, identifier);
+
+        if (!(obj instanceof AMLInvokable)) {
+            throw new AMLRuntimeException("attempt to call something which is not a function");
+        }
+
+        return (AMLInvokable) obj;
     }
 }

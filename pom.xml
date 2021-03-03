@@ -15,6 +15,7 @@
   <modules>
     <module>language</module>
     <module>repl</module>
+    <module>runner</module>
   </modules>
 
   <properties>

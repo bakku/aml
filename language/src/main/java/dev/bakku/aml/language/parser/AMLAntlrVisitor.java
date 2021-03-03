@@ -8,8 +8,6 @@ import dev.bakku.aml.language.nodes.*;
 import dev.bakku.aml.language.runtime.types.AMLNumber;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.util.List;
-
 public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
     private final AMLContext context;
     private boolean inNestedScope = false;
@@ -25,9 +23,7 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
             // filter all newlines
             .filter(c -> !(c instanceof TerminalNode))
             .map(c -> {
-                if (c instanceof AMLParser.LibraryContext) {
-                    return this.visitLibrary((AMLParser.LibraryContext) c);
-                } else if (c instanceof AMLParser.FunctionContext) {
+                if (c instanceof AMLParser.FunctionContext) {
                     return this.visitFunction((AMLParser.FunctionContext) c);
                 } else {
                     return this.visitExpression((AMLParser.ExpressionContext) c);
@@ -46,7 +42,7 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
             .toArray(String[]::new);
 
         inNestedScope = true;
-        var bodyNode = expressionsToProgram(ctx.expression());
+        var bodyNode = this.visitExpression(ctx.expression());
         inNestedScope = false;
 
         return new AMLDefineFunctionNode(
@@ -72,17 +68,47 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
     public AMLBaseNode visitIfcond(AMLParser.IfcondContext ctx) {
         return new AMLIfNode(
             this.visitLogicEquivalence(ctx.logicEquivalence()),
-            expressionsToProgram(ctx.thenBranch().expression()),
-            expressionsToProgram(ctx.elseBranch().expression())
+            this.visitThenBranch(ctx.thenBranch()),
+            this.visitElseBranch(ctx.elseBranch())
+        );
+    }
+
+    @Override
+    public AMLBaseNode visitThenBranch(AMLParser.ThenBranchContext ctx) {
+        if (ctx.ifcond() != null) {
+            return this.visitIfcond(ctx.ifcond());
+        } else if (ctx.composition() != null) {
+            return this.visitComposition(ctx.composition());
+        } else {
+            return this.visitLogicEquivalence(ctx.logicEquivalence());
+        }
+    }
+
+    @Override
+    public AMLBaseNode visitElseBranch(AMLParser.ElseBranchContext ctx) {
+        if (ctx.ifcond() != null) {
+            return this.visitIfcond(ctx.ifcond());
+        } else if (ctx.composition() != null) {
+            return this.visitComposition(ctx.composition());
+        } else {
+            return this.visitLogicEquivalence(ctx.logicEquivalence());
+        }
+    }
+
+    @Override
+    public AMLBaseNode visitComposition(AMLParser.CompositionContext ctx) {
+        return AMLComposeFunctionsNodeGen.create(
+            AMLReadVariableNodeGen.create(this.context.getGlobalFrame(), ctx.IDENTIFIER(0).getSymbol().getText()),
+            AMLReadVariableNodeGen.create(this.context.getGlobalFrame(), ctx.IDENTIFIER(1).getSymbol().getText())
         );
     }
 
     @Override
     public AMLBaseNode visitAssignment(AMLParser.AssignmentContext ctx) {
-        if (ctx.expression() != null) {
+        if (ctx.assignment() != null) {
             if (this.inNestedScope) {
                 return AMLWriteLocalValueNodeGen.create(
-                    this.visitExpression(ctx.expression()),
+                    this.visitAssignment(ctx.assignment()),
                     ctx.IDENTIFIER().getSymbol().getText()
                 );
             } else {
@@ -91,14 +117,16 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
                     .findOrAddFrameSlot(ctx.IDENTIFIER().getSymbol().getText());
 
                 return AMLWriteGlobalValueNodeGen.create(
-                    this.visitExpression(ctx.expression()),
+                    this.visitAssignment(ctx.assignment()),
                     this.context.getGlobalFrame(),
                     frameSlot
                 );
             }
+        } else if (ctx.composition() != null) {
+            return this.visitComposition(ctx.composition());
+        } else {
+            return this.visitLogicEquivalence(ctx.logicEquivalence());
         }
-
-        return this.visitLogicEquivalence(ctx.logicEquivalence());
     }
 
     @Override
@@ -377,19 +405,10 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
         if (ctx.expression() != null) {
             return this.visitExpression(ctx.expression());
         } else if (ctx.IDENTIFIER() != null) {
-            if (this.inNestedScope) {
-                return AMLReadLocalValueNodeGen.create(
-                    this.context.getGlobalFrame(),
-                    ctx.IDENTIFIER().getSymbol().getText()
-                );
-            } else {
-                return AMLReadGlobalValueNodeGen.create(
-                    this.context.getGlobalFrame(),
-                    this.context.getGlobalFrame()
-                        .getFrameDescriptor()
-                        .findOrAddFrameSlot(ctx.IDENTIFIER().getSymbol().getText())
-                );
-            }
+            return AMLReadVariableNodeGen.create(
+                this.context.getGlobalFrame(),
+                ctx.IDENTIFIER().getSymbol().getText()
+            );
         } else if (ctx.call() != null) {
             return this.visitCall(ctx.call());
         }
@@ -401,9 +420,7 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
     public AMLBaseNode visitCall(AMLParser.CallContext ctx) {
         return new AMLCallNode(
             this.context.getGlobalFrame(),
-            this.context
-                .getGlobalFrameDescriptor()
-                .findOrAddFrameSlot(ctx.IDENTIFIER().getSymbol().getText()),
+            ctx.IDENTIFIER().getSymbol().getText(),
             ctx.arguments()
                 .logicEquivalence()
                 .stream()
@@ -422,14 +439,6 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
 
         return new AMLNumberNode(
             AMLNumber.of(ctx.NUMBER(0).toString())
-        );
-    }
-
-    private AMLProgramNode expressionsToProgram(List<AMLParser.ExpressionContext> expressions) {
-        return new AMLProgramNode(
-            expressions.stream()
-                .map(this::visitExpression)
-                .toArray(AMLBaseNode[]::new)
         );
     }
 }

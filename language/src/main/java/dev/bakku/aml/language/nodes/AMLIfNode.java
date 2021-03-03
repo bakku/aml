@@ -8,11 +8,11 @@ public class AMLIfNode extends AMLBaseNode {
     @Child
     private AMLBaseNode conditionNode;
     @Child
-    private AMLProgramNode thenNode;
+    private AMLBaseNode thenNode;
     @Child
-    private AMLProgramNode elseNode;
+    private AMLBaseNode elseNode;
 
-    public AMLIfNode(AMLBaseNode conditionNode, AMLProgramNode thenNode, AMLProgramNode elseNode) {
+    public AMLIfNode(AMLBaseNode conditionNode, AMLBaseNode thenNode, AMLBaseNode elseNode) {
         this.conditionNode = conditionNode;
         this.thenNode = thenNode;
         this.elseNode = elseNode;

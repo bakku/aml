@@ -1,6 +1,5 @@
 package dev.bakku.aml.language;
 
-import dev.bakku.aml.language.runtime.AMLRuntimeException;
 import dev.bakku.aml.language.runtime.types.AMLError;
 import dev.bakku.aml.language.runtime.types.AMLNumber;
 import org.junit.Test;
@@ -11,7 +10,10 @@ import static org.junit.Assert.assertTrue;
 public class AMLIfTests {
     @Test
     public void testThenBranch() {
-        var code = "if 1 = 1 then 3 + 4 ; else 5 - 4 ; end";
+        var code =
+            "f: () → if 1 = 1: 3 + 4 " +
+                    "otherwise: 5 - 4;" +
+            "f();";
 
         var result = TestHelper.evalCode(code);
 
@@ -21,7 +23,11 @@ public class AMLIfTests {
 
     @Test
     public void testElseBranch() {
-        var code = "if 1 ≠ 1 then 3 + 4 ; else 5 - 4 ; end";
+        var code =
+            "f: () → if 1 ≠ 1: 3 + 4 " +
+                    "otherwise: 5 - 4;" +
+            "f();";
+
         var result = TestHelper.evalCode(code);
 
         assertTrue(result instanceof AMLNumber);
@@ -30,7 +36,11 @@ public class AMLIfTests {
 
     @Test
     public void testNonBooleanCondition() {
-        var code = "if 1 then 3 + 4 ; else 5 - 4 ; end";
+        var code =
+            "f: () → if 1: 3 + 4 " +
+                    "otherwise: 5 - 4;" +
+                    "f();";
+
         var result = TestHelper.evalCode(code);
 
         assertTrue(result instanceof AMLError);

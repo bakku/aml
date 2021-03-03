@@ -11,27 +11,31 @@ import java.util.Objects;
 
 @NodeField(name = "globalFrame", type = MaterializedFrame.class)
 @NodeField(name = "identifier", type = String.class)
-public abstract class AMLReadLocalValueNode extends AMLBaseNode {
+public abstract class AMLReadVariableNode extends AMLBaseNode {
     public abstract String getIdentifier();
     public abstract MaterializedFrame getGlobalFrame();
 
     @Specialization
     protected Object read(VirtualFrame frame) {
+        return tryRead(frame, getGlobalFrame(), getIdentifier());
+    }
+
+    protected static Object tryRead(VirtualFrame localFrame, MaterializedFrame globalFrame, String identifier) {
         try {
-            var slot = frame.getFrameDescriptor().findFrameSlot(getIdentifier());
-            return Objects.requireNonNull(frame.getObject(slot));
+            var slot = localFrame.getFrameDescriptor().findFrameSlot(identifier);
+            return Objects.requireNonNull(localFrame.getObject(slot));
         } catch (NullPointerException | FrameSlotTypeException ex) {
             // local read failed, try global read
-            return globalRead();
+            return globalRead(globalFrame, identifier);
         }
     }
 
-    protected Object globalRead() {
+    private static Object globalRead(MaterializedFrame globalFrame, String identifier) {
         try {
-            var slot = getGlobalFrame().getFrameDescriptor().findFrameSlot(getIdentifier());
-            return Objects.requireNonNull(getGlobalFrame().getObject(slot));
+            var slot = globalFrame.getFrameDescriptor().findFrameSlot(identifier);
+            return Objects.requireNonNull(globalFrame.getObject(slot));
         } catch (NullPointerException | FrameSlotTypeException ex) {
-            throw new AMLRuntimeException("could not read value: " + getIdentifier());
+            throw new AMLRuntimeException("could not get variable or function: " + identifier);
         }
     }
 }

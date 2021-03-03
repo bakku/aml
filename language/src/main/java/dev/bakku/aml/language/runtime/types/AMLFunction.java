@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ExportLibrary(InteropLibrary.class)
-public class AMLFunction implements TruffleObject {
+public class AMLFunction implements TruffleObject, AMLInvokable {
     private final String name;
     private final AMLBaseNode bodyNode;
     private final String[] argumentNames;
@@ -28,7 +28,7 @@ public class AMLFunction implements TruffleObject {
 
     public Object invoke(Object... arguments) {
         if (arguments.length != argumentNames.length) {
-            throw new AMLRuntimeException("function " + name + " expects " + argumentNames.length + " arguments but only got " + arguments.length);
+            throw new AMLRuntimeException("function " + name + " expects " + argumentNames.length + " arguments but got " + arguments.length);
         }
 
         List<AMLBaseNode> argumentNodes = new ArrayList<>();
@@ -44,6 +44,10 @@ public class AMLFunction implements TruffleObject {
                 )
             )
         ).call();
+    }
+
+    public int arity() {
+        return argumentNames.length;
     }
 
     @ExportMessage

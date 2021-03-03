@@ -10,7 +10,7 @@ import static org.junit.Assert.assertTrue;
 public class AMLFunctionTests {
     @Test
     public void defineAndCallFunction() {
-        var code = "function f(a, b) a + b ; end " +
+        var code = "f: (a, b) → a + b;" +
             "f(1, 2) ;";
         var result = TestHelper.evalCode(code);
 
@@ -20,7 +20,7 @@ public class AMLFunctionTests {
 
     @Test
     public void functionWithGlobalVars() {
-        var code = "function diameter(r) π · r ^ 2 ; end " +
+        var code = "diameter: (r) → π · r ^ 2; " +
             "diameter(5) ;";
         var result = TestHelper.evalCode(code);
 
@@ -30,8 +30,8 @@ public class AMLFunctionTests {
 
     @Test
     public void functionCallAsArgument() {
-        var code = "function addOne(a) a + 1 ; end " +
-            "addOne(addOne(1)) ;";
+        var code = "addOne: (a) → a + 1; " +
+            "addOne(addOne(1));";
         var result = TestHelper.evalCode(code);
 
         assertTrue(result instanceof AMLNumber);
@@ -40,9 +40,9 @@ public class AMLFunctionTests {
 
     @Test
     public void nestedFunctionCalls() {
-        var code = "function addOne(a) a + 1 ; end " +
-            "function addTwo(a) addOne(addOne(a)); end " +
-            "addTwo(2) ;";
+        var code = "addOne: (a) → a + 1;" +
+            "addTwo: (a) → addOne(addOne(a)); " +
+            "addTwo(2);";
         var result = TestHelper.evalCode(code);
 
         assertTrue(result instanceof AMLNumber);
@@ -50,8 +50,48 @@ public class AMLFunctionTests {
     }
 
     @Test
+    public void functionsMustBeFirstClassCitizens() {
+        var code =
+            "f: (a) → a + 1; " +
+            "twice: (op, x) → op(op(x)); " +
+            "twice(f, 1);";
+
+        var result = TestHelper.evalCode(code);
+
+        assertTrue(result instanceof AMLNumber);
+        assertEquals(AMLNumber.of(3), result);
+    }
+
+    @Test
+    public void iteratedFunctions() {
+        var code =
+            "inc: (a) → a + 1; " +
+            "tenInc ← inc ^ 10; " +
+            "tenInc(0);";
+
+        var result = TestHelper.evalCode(code);
+
+        assertTrue(result instanceof AMLNumber);
+        assertEquals(AMLNumber.of(10), result);
+    }
+
+    @Test
+    public void composedFunctions() {
+        var code =
+            "inc: (a) → a + 1; " +
+            "dec: (a) → a - 1; " +
+            "incAndDec ← inc ∘ dec; " +
+            "incAndDec(1);";
+
+        var result = TestHelper.evalCode(code);
+
+        assertTrue(result instanceof AMLNumber);
+        assertEquals(AMLNumber.of(1), result);
+    }
+
+    @Test
     public void callingUndefinedFunctions() {
-        var code = "f(1 , 2) ;";
+        var code = "f(1, 2);";
         var result = TestHelper.evalCode(code);
 
         assertTrue(result instanceof AMLError);
@@ -59,7 +99,7 @@ public class AMLFunctionTests {
 
     @Test
     public void callingNonFunction() {
-        var code = "a ← 1 + 1 ; a() ;";
+        var code = "a ← 1 + 1; a();";
         var result = TestHelper.evalCode(code);
 
         assertTrue(result instanceof AMLError);
@@ -67,8 +107,8 @@ public class AMLFunctionTests {
 
     @Test
     public void redefiningFunctionsMustBeForbidden() {
-        var code = "function f(a, b) a + b ; end " +
-            "function f(a, b) a + b ; end";
+        var code = "f: (a, b) → a + b; " +
+            "f: (a, b) → a + b;";
         var result = TestHelper.evalCode(code);
 
         assertTrue(result instanceof AMLError);
@@ -76,7 +116,7 @@ public class AMLFunctionTests {
 
     @Test
     public void duplicateArgumentNames() {
-        var code = "function f(a, a) a + b ; end";
+        var code = "f: (a, a) → a + b;";
         var result = TestHelper.evalCode(code);
 
         assertTrue(result instanceof AMLError);
@@ -85,7 +125,7 @@ public class AMLFunctionTests {
     @Test
     public void readingNonExistentLocalVals() {
         // must not return 1 + 1 and ignore the error
-        var code = "function f(a) b ; end f(1) ; 1 + 1 ;";
+        var code = "f: (a) → b; f(1); 1 + 1;";
         var result = TestHelper.evalCode(code);
 
         assertTrue(result instanceof AMLError);

@@ -1,0 +1,5 @@
+function area(r)
+  π · r ^ 2;
+end
+
+area(5);
