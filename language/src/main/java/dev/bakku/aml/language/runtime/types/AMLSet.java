@@ -10,27 +10,31 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @ExportLibrary(InteropLibrary.class)
-public class AMLSet implements TruffleObject {
-    private final Set<Object> set;
+public class AMLSet<T extends AMLObject> implements TruffleObject, AMLObject {
+    private final Set<T> set;
 
-    private AMLSet(Set<Object> set) {
+    private AMLSet(Set<T> set) {
         this.set = set;
     }
 
-    public static AMLSet of(Object... values) {
-        return new AMLSet(Set.of(values));
+    public static <T extends AMLObject> AMLSet<T> of(T... values) {
+        return new AMLSet<>(Set.of(values));
     }
 
-    public AMLSet intersect(AMLSet other) {
+    public AMLSet<T> intersect(AMLSet<T> other) {
         var result = new HashSet<>(other.set);
         result.retainAll(this.set);
-        return new AMLSet(result);
+        return new AMLSet<>(result);
+    }
+
+    public AMLBoolean contains(AMLObject o) {
+        return AMLBoolean.of(set.contains(o));
     }
 
     @ExportMessage
     public Object toDisplayString(boolean allowSideEffects) {
         return set.stream()
-            .map(Object::toString)
+            .map(i -> i.toDisplayString(allowSideEffects).toString())
             .collect(Collectors.joining(", ", "{", "}"));
     }
 

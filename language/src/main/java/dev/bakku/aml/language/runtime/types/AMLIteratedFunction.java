@@ -6,7 +6,7 @@ import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 
 @ExportLibrary(InteropLibrary.class)
-public class AMLIteratedFunction implements TruffleObject, AMLInvokable {
+public class AMLIteratedFunction implements TruffleObject, AMLInvokable, AMLObject {
     private AMLFunction func;
     private AMLNumber iterations;
 

@@ -6,7 +6,7 @@ import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 
 @ExportLibrary(InteropLibrary.class)
-public class AMLFraction implements TruffleObject {
+public class AMLFraction implements TruffleObject, AMLObject {
     private final AMLNumber numerator;
     private final AMLNumber denominator;
 

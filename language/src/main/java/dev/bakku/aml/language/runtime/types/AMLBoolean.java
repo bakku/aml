@@ -8,7 +8,7 @@ import com.oracle.truffle.api.library.ExportMessage;
 import java.util.Objects;
 
 @ExportLibrary(InteropLibrary.class)
-public class AMLBoolean implements TruffleObject {
+public class AMLBoolean implements TruffleObject, AMLObject {
     private static final AMLBoolean TRUE = new AMLBoolean(true);
     private static final AMLBoolean FALSE = new AMLBoolean(false);
 

@@ -259,7 +259,13 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
 
     @Override
     public AMLBaseNode visitComparison(AMLParser.ComparisonContext ctx) {
-        return this.visitNumComparison(ctx.numComparison());
+        if (ctx.numComparison() != null) {
+            return this.visitNumComparison(ctx.numComparison());
+        } else if (ctx.setComparison() != null) {
+            return this.visitSetComparison(ctx.setComparison());
+        }
+
+        return this.visitQuantification(ctx.quantification());
     }
 
     @Override
@@ -504,6 +510,57 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
 
         return new AMLNumberNode(
             AMLNumber.of(ctx.NUMBER(0).toString())
+        );
+    }
+
+    @Override
+    public AMLBaseNode visitSetComparison(AMLParser.SetComparisonContext ctx) {
+        return this.visitSetOperations(ctx.setOperations(0));
+    }
+
+    @Override
+    public AMLBaseNode visitSetOperations(AMLParser.SetOperationsContext ctx) {
+        return this.visitSetUnary(ctx.setUnary(0));
+    }
+
+    @Override
+    public AMLBaseNode visitSetUnary(AMLParser.SetUnaryContext ctx) {
+        return this.visitSetPrimary(ctx.setPrimary());
+    }
+
+    @Override
+    public AMLBaseNode visitSetPrimary(AMLParser.SetPrimaryContext ctx) {
+        if (ctx.call() != null) {
+            return this.visitCall(ctx.call());
+        } else if (ctx.setLiteral() != null) {
+            return this.visitSetLiteral(ctx.setLiteral());
+        } else if (ctx.setEllipsis() != null) {
+            return this.visitSetEllipsis(ctx.setEllipsis());
+        } else if (ctx.expression() != null) {
+            return this.visitExpression(ctx.expression());
+        }
+
+        return AMLReadVariableNodeGen.create(
+            this.context.getGlobalFrame(),
+            ctx.IDENTIFIER().getSymbol().getText()
+        );
+    }
+
+    @Override
+    public AMLBaseNode visitSetLiteral(AMLParser.SetLiteralContext ctx) {
+        var elements = ctx.logicEquivalence()
+            .stream()
+            .map(this::visitLogicEquivalence)
+            .toArray(AMLBaseNode[]::new);
+
+        return new AMLSetLiteralNode(elements);
+    }
+
+    @Override
+    public AMLBaseNode visitSetEllipsis(AMLParser.SetEllipsisContext ctx) {
+        return AMLSetEllipsisNodeGen.create(
+            this.visitNumUnary(ctx.numUnary(0)),
+            this.visitNumUnary(ctx.numUnary(1))
         );
     }
 }

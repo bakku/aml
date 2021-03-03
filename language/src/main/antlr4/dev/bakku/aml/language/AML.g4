@@ -43,8 +43,8 @@ setOperations    : setUnary ((UNION | INTERSECTION | BACKWARD_SLASH) setUnary)* 
 setUnary         : cardinality | setPrimary ;
 cardinality      : BAR setPrimary BAR ;
 setPrimary       : call | setLiteral | setEllipsis | IDENTIFIER | LEFT_PAREN expression RIGHT_PAREN ;
-setLiteral       : LEFT_BRACE ((NUMBER COMMA)* NUMBER)? RIGHT_BRACE ;
-setEllipsis      : LEFT_BRACE NUMBER COMMA ELLIPSIS COMMA NUMBER RIGHT_BRACE ;
+setLiteral       : LEFT_BRACE ((logicEquivalence COMMA)* logicEquivalence)? RIGHT_BRACE ;
+setEllipsis      : LEFT_BRACE numUnary COMMA ELLIPSIS COMMA numUnary RIGHT_BRACE ;
 
 call             : IDENTIFIER LEFT_PAREN arguments RIGHT_PAREN ;
 arguments        : logicEquivalence? | (logicEquivalence COMMA)+ logicEquivalence ;
@@ -104,8 +104,9 @@ IF               : 'if' ;
 OTHERWISE        : 'otherwise' ;
 NUMBER           : [0-9]+ ;
 IDENTIFIER       : LETTER (LETTER | [0-9])* ;
-LETTER           : [a-zA-Z] | GREEK_LETTERS ;
+LETTER           : [a-zA-Z] | GREEK_LETTERS | SYMBOLS ;
 GREEK_LETTERS    : '\u0391'..'\u03CE' ;
+SYMBOLS          : '\u22A4' | '\u22A5' | '\'' ;
 WHITESPACE       : (' ' | '\t') -> skip ;
 COMMENT          : '--' .*? NEWLINE -> skip;
 NEWLINE          : '\r'? '\n' -> skip;

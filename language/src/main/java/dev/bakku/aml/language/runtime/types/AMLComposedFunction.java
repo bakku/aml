@@ -6,7 +6,7 @@ import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 
 @ExportLibrary(InteropLibrary.class)
-public class AMLComposedFunction implements TruffleObject, AMLInvokable {
+public class AMLComposedFunction implements TruffleObject, AMLInvokable, AMLObject {
     private AMLFunction outer;
     private AMLFunction inner;
 

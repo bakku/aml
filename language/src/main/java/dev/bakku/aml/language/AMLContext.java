@@ -4,6 +4,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.MaterializedFrame;
+import dev.bakku.aml.language.runtime.types.AMLBoolean;
 import dev.bakku.aml.language.runtime.types.AMLNumber;
 
 public class AMLContext {
@@ -22,6 +23,16 @@ public class AMLContext {
         this.globalFrame.setObject(
             this.globalFrameDescriptor.addFrameSlot("π"),
             AMLNumber.PI
+        );
+
+        this.globalFrame.setObject(
+            this.globalFrameDescriptor.addFrameSlot("⊤"),
+            AMLBoolean.of(true)
+        );
+
+        this.globalFrame.setObject(
+            this.globalFrameDescriptor.addFrameSlot("⊥"),
+            AMLBoolean.of(false)
         );
     }
 

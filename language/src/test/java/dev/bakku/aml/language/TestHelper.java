@@ -7,8 +7,10 @@ import dev.bakku.aml.language.parser.AMLSyntaxTreeParser;
 import dev.bakku.aml.language.runtime.types.AMLBoolean;
 import dev.bakku.aml.language.runtime.types.AMLFraction;
 import dev.bakku.aml.language.runtime.types.AMLNumber;
+import dev.bakku.aml.language.runtime.types.AMLSet;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -45,5 +47,15 @@ public class TestHelper {
     public static void assertAMLBoolean(boolean expected, Object actual) {
         assertTrue(actual instanceof AMLBoolean);
         assertEquals(((AMLBoolean) actual).isTrue(), expected);
+    }
+
+    public static void assertAMLSetWithNumbers(Set<Integer> expected, Object actual) {
+        assertTrue(actual instanceof AMLSet);
+        expected.forEach(i -> ((AMLSet) actual).contains(AMLNumber.of(i)));
+    }
+
+    public static void assertAMLSetWithBooleans(Set<Boolean> expected, Object actual) {
+        assertTrue(actual instanceof AMLSet);
+        expected.forEach(i -> ((AMLSet) actual).contains(AMLBoolean.of(i)));
     }
 }

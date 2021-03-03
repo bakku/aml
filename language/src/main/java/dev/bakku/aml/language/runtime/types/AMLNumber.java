@@ -13,7 +13,7 @@ import java.math.RoundingMode;
 import java.util.Objects;
 
 @ExportLibrary(InteropLibrary.class)
-public class AMLNumber implements TruffleObject {
+public class AMLNumber implements TruffleObject, AMLObject {
     private static final int PRECISION = 100;
     public static final AMLNumber PI = AMLNumber.of(BigDecimalMath.pi(new MathContext(PRECISION)));
 

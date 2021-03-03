@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ExportLibrary(InteropLibrary.class)
-public class AMLFunction implements TruffleObject, AMLInvokable {
+public class AMLFunction implements TruffleObject, AMLInvokable, AMLObject {
     private final String name;
     private final AMLBaseNode bodyNode;
     private final String[] argumentNames;
