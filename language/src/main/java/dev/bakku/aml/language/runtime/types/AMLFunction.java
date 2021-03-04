@@ -7,7 +7,7 @@ import com.oracle.truffle.api.library.ExportMessage;
 import dev.bakku.aml.language.nodes.AMLBaseNode;
 import dev.bakku.aml.language.nodes.AMLProgramNode;
 import dev.bakku.aml.language.nodes.AMLRootNode;
-import dev.bakku.aml.language.nodes.AMLWriteFunctionArgumentNode;
+import dev.bakku.aml.language.nodes.functions.AMLWriteFunctionArgumentNode;
 import dev.bakku.aml.language.runtime.AMLRuntimeException;
 
 import java.util.ArrayList;

@@ -3,11 +3,10 @@ package dev.bakku.aml.language;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.TruffleLanguage;
-import dev.bakku.aml.language.nodes.AMLReturnErrorNode;
+import dev.bakku.aml.language.nodes.generic.AMLReturnErrorNode;
 import dev.bakku.aml.language.nodes.AMLRootNode;
 import dev.bakku.aml.language.parser.AMLParserException;
 import dev.bakku.aml.language.parser.AMLSyntaxTreeParser;
-import dev.bakku.aml.language.runtime.AMLRuntimeException;
 import dev.bakku.aml.language.runtime.types.AMLError;
 
 /**

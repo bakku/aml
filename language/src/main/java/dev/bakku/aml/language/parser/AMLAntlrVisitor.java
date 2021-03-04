@@ -4,6 +4,12 @@ import dev.bakku.aml.language.AMLBaseVisitor;
 import dev.bakku.aml.language.AMLContext;
 import dev.bakku.aml.language.AMLLexer;
 import dev.bakku.aml.language.AMLParser;
+import dev.bakku.aml.language.nodes.functions.*;
+import dev.bakku.aml.language.nodes.generic.*;
+import dev.bakku.aml.language.nodes.logic.*;
+import dev.bakku.aml.language.nodes.numeric.*;
+import dev.bakku.aml.language.nodes.sets.*;
+import dev.bakku.aml.language.nodes.variables.*;
 import dev.bakku.aml.language.nodes.*;
 import dev.bakku.aml.language.runtime.types.AMLNumber;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -107,7 +113,7 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
     public AMLBaseNode visitAssignment(AMLParser.AssignmentContext ctx) {
         if (ctx.assignment() != null) {
             if (this.inNestedScope) {
-                return AMLWriteLocalValueNodeGen.create(
+                return AMLWriteLocalVariableNodeGen.create(
                     this.visitAssignment(ctx.assignment()),
                     ctx.IDENTIFIER().getSymbol().getText()
                 );
@@ -116,7 +122,7 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
                     .getFrameDescriptor()
                     .findOrAddFrameSlot(ctx.IDENTIFIER().getSymbol().getText());
 
-                return AMLWriteGlobalValueNodeGen.create(
+                return AMLWriteGlobalVariableNodeGen.create(
                     this.visitAssignment(ctx.assignment()),
                     this.context.getGlobalFrame(),
                     frameSlot
