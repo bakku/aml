@@ -1,0 +1,5 @@
+even: (x) → x mod 2 = 0;
+allEven: (S) → ∀(x ∈ S: even(x));
+S ← { x ∈ {1, ..., 100} | even(x) };
+print(S);
+allEven(S);

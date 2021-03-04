@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @ExportLibrary(InteropLibrary.class)
 public class AMLSet implements TruffleObject, AMLObject {
@@ -53,6 +54,10 @@ public class AMLSet implements TruffleObject, AMLObject {
 
     public AMLNumber cardinality() {
         return AMLNumber.of(set.size());
+    }
+
+    public Stream<AMLObject> stream() {
+        return this.set.stream();
     }
 
     @Override

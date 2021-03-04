@@ -19,9 +19,9 @@ comparison       : quantification | numComparison | setComparison ;
 
 // Quantification
 quantification   : universal | existential | uniqueness ;
-universal        : UNIVERSAL LEFT_PAREN IDENTIFIER ELEMENT IDENTIFIER COLON logicEquivalence RIGHT_PAREN ;
-existential      : EXISTENTIAL LEFT_PAREN IDENTIFIER ELEMENT IDENTIFIER COLON logicEquivalence RIGHT_PAREN ;
-uniqueness       : UNIQUENESS LEFT_PAREN IDENTIFIER ELEMENT IDENTIFIER COLON logicEquivalence RIGHT_PAREN ;
+universal        : UNIVERSAL LEFT_PAREN IDENTIFIER ELEMENT setPrimary COLON logicEquivalence RIGHT_PAREN ;
+existential      : EXISTENTIAL LEFT_PAREN IDENTIFIER ELEMENT setPrimary COLON logicEquivalence RIGHT_PAREN ;
+uniqueness       : UNIQUENESS LEFT_PAREN IDENTIFIER ELEMENT setPrimary COLON logicEquivalence RIGHT_PAREN ;
 
 // Numeric rules
 numComparison    : term ((LT | GT | LTE | GTE) term)* ;
@@ -42,7 +42,8 @@ setComparison    : setOperations ((SUBSET | NOT_SUBSET | SUBSET_EQ | NOT_SUBSET_
 setOperations    : setUnary ((UNION | INTERSECTION | BACKWARD_SLASH) setUnary)* ;
 setUnary         : cardinality | setPrimary ;
 cardinality      : BAR setPrimary BAR ;
-setPrimary       : call | setLiteral | setEllipsis | IDENTIFIER | LEFT_PAREN logicEquivalence RIGHT_PAREN ;
+setPrimary       : call | setLiteral | setEllipsis | setBuilder | IDENTIFIER | LEFT_PAREN logicEquivalence RIGHT_PAREN ;
+setBuilder       : LEFT_BRACE IDENTIFIER ELEMENT setPrimary BAR logicEquivalence RIGHT_BRACE ;
 setLiteral       : LEFT_BRACE ((logicEquivalence COMMA)* logicEquivalence)? RIGHT_BRACE ;
 setEllipsis      : LEFT_BRACE numUnary COMMA ELLIPSIS COMMA numUnary RIGHT_BRACE ;
 

@@ -656,6 +656,8 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
             return this.visitSetLiteral(ctx.setLiteral());
         } else if (ctx.setEllipsis() != null) {
             return this.visitSetEllipsis(ctx.setEllipsis());
+        } else if (ctx.setBuilder() != null) {
+            return this.visitSetBuilder(ctx.setBuilder());
         } else if (ctx.logicEquivalence() != null) {
             return this.visitLogicEquivalence(ctx.logicEquivalence());
         }
@@ -681,6 +683,53 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
         return AMLSetEllipsisNodeGen.create(
             this.visitNumUnary(ctx.numUnary(0)),
             this.visitNumUnary(ctx.numUnary(1))
+        );
+    }
+
+    @Override
+    public AMLBaseNode visitSetBuilder(AMLParser.SetBuilderContext ctx) {
+        return new AMLSetBuilderNode(
+            ctx.IDENTIFIER().getSymbol().getText(),
+            this.visitSetPrimary(ctx.setPrimary()),
+            this.visitLogicEquivalence(ctx.logicEquivalence())
+        );
+    }
+
+    @Override
+    public AMLBaseNode visitQuantification(AMLParser.QuantificationContext ctx) {
+        if (ctx.universal() != null) {
+            return this.visitUniversal(ctx.universal());
+        } else if (ctx.existential() != null) {
+            return this.visitExistential(ctx.existential());
+        } else {
+            return this.visitUniqueness(ctx.uniqueness());
+        }
+    }
+
+    @Override
+    public AMLBaseNode visitUniversal(AMLParser.UniversalContext ctx) {
+        return new AMLUniversalQuantificationNode(
+            ctx.IDENTIFIER().getSymbol().getText(),
+            this.visitSetPrimary(ctx.setPrimary()),
+            this.visitLogicEquivalence(ctx.logicEquivalence())
+        );
+    }
+
+    @Override
+    public AMLBaseNode visitExistential(AMLParser.ExistentialContext ctx) {
+        return new AMLExistentialQuantificationNode(
+            ctx.IDENTIFIER().getSymbol().getText(),
+            this.visitSetPrimary(ctx.setPrimary()),
+            this.visitLogicEquivalence(ctx.logicEquivalence())
+        );
+    }
+
+    @Override
+    public AMLBaseNode visitUniqueness(AMLParser.UniquenessContext ctx) {
+        return new AMLUniquenessQuantificationNode(
+            ctx.IDENTIFIER().getSymbol().getText(),
+            this.visitSetPrimary(ctx.setPrimary()),
+            this.visitLogicEquivalence(ctx.logicEquivalence())
         );
     }
 }

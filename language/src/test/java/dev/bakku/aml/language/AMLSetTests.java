@@ -1,10 +1,12 @@
 package dev.bakku.aml.language;
 
+import dev.bakku.aml.language.runtime.types.AMLError;
 import org.junit.Test;
 
 import java.util.Set;
 
 import static dev.bakku.aml.language.TestHelper.*;
+import static org.junit.Assert.assertTrue;
 
 public class AMLSetTests {
     @Test
@@ -20,6 +22,35 @@ public class AMLSetTests {
         var code = "{1, ..., 4};";
         var result = evalCode(code);
         assertAMLSetWithNumbers(Set.of(1, 2, 3, 4), result);
+    }
+
+    @Test
+    public void createSetsWithBuilder() {
+        var code = "{x ∈ {1, ..., 4} | x mod 2 = 0};";
+        var result = evalCode(code);
+        assertAMLSetWithNumbers(Set.of(2, 4), result);
+    }
+
+    @Test
+    public void createSetsWithBuilderMustReturnErrorIfBodyVarIsNotDefined() {
+        var code = "{x ∈ {1, ..., 4} | y mod 2 = 0};";
+        var result = evalCode(code);
+        assertTrue(result instanceof AMLError);
+    }
+
+    @Test
+    public void createSetsWithBuilderMustReturnErrorIfInitializerIsNotASet() {
+        var code = "a ← 2;" +
+            "{x ∈ a | x mod 2 = 0};";
+        var result = evalCode(code);
+        assertTrue(result instanceof AMLError);
+    }
+
+    @Test
+    public void createSetsWithBuilderMustReturnErrorIfBodyDoesNotReturnBoolean() {
+        var code = "{x ∈ {1, ..., 4} | x mod 2};";
+        var result = evalCode(code);
+        assertTrue(result instanceof AMLError);
     }
 
     @Test
