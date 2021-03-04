@@ -51,11 +51,21 @@ public class TestHelper {
 
     public static void assertAMLSetWithNumbers(Set<Integer> expected, Object actual) {
         assertTrue(actual instanceof AMLSet);
-        expected.forEach(i -> ((AMLSet) actual).contains(AMLNumber.of(i)));
+        assertEquals(AMLNumber.of(expected.size()), ((AMLSet) actual).cardinality());
+        expected.forEach(i ->
+            assertTrue(
+                ((AMLSet) actual).contains(AMLNumber.of(i)).isTrue()
+            )
+        );
     }
 
     public static void assertAMLSetWithBooleans(Set<Boolean> expected, Object actual) {
         assertTrue(actual instanceof AMLSet);
-        expected.forEach(i -> ((AMLSet) actual).contains(AMLBoolean.of(i)));
+        assertEquals(AMLNumber.of(expected.size()), ((AMLSet) actual).cardinality());
+        expected.forEach(i ->
+            assertTrue(
+                ((AMLSet) actual).contains(AMLBoolean.of(i)).isTrue()
+            )
+        );
     }
 }

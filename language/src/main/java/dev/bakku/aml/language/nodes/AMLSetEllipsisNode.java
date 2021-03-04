@@ -12,7 +12,7 @@ import java.util.List;
 @NodeChild("to")
 public abstract class AMLSetEllipsisNode extends AMLBaseNode {
     @Specialization
-    protected AMLSet<AMLNumber> createSet(AMLNumber from, AMLNumber to) {
+    protected AMLSet createSet(AMLNumber from, AMLNumber to) {
         var smaller = from;
         var bigger = to;
 

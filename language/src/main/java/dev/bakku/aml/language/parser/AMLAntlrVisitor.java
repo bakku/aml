@@ -473,8 +473,8 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
 
     @Override
     public AMLBaseNode visitNumPrimary(AMLParser.NumPrimaryContext ctx) {
-        if (ctx.expression() != null) {
-            return this.visitExpression(ctx.expression());
+        if (ctx.logicEquivalence() != null) {
+            return this.visitLogicEquivalence(ctx.logicEquivalence());
         } else if (ctx.IDENTIFIER() != null) {
             return AMLReadVariableNodeGen.create(
                 this.context.getGlobalFrame(),
@@ -515,16 +515,130 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
 
     @Override
     public AMLBaseNode visitSetComparison(AMLParser.SetComparisonContext ctx) {
-        return this.visitSetOperations(ctx.setOperations(0));
+        if (ctx.getChildCount() == 1) {
+            return this.visitSetOperations(ctx.setOperations(0));
+        } else {
+            AMLBaseNode ret = this.visitSetOperations(ctx.setOperations(0));
+
+            int setOperationsCounter = 1;
+            int childrenCounter = 1;
+
+            while (childrenCounter < ctx.getChildCount()) {
+                var op = (TerminalNode) ctx.getChild(childrenCounter);
+
+                switch (op.getSymbol().getType()) {
+                    case AMLLexer.SUBSET:
+                        ret = AMLSubsetNodeGen.create(
+                            ret,
+                            this.visitSetOperations(ctx.setOperations(setOperationsCounter))
+                        );
+                        break;
+                    case AMLLexer.NOT_SUBSET:
+                        ret = AMLNotSubsetNodeGen.create(
+                            ret,
+                            this.visitSetOperations(ctx.setOperations(setOperationsCounter))
+                        );
+                        break;
+                    case AMLLexer.SUBSET_EQ:
+                        ret = AMLSubsetEqNodeGen.create(
+                            ret,
+                            this.visitSetOperations(ctx.setOperations(setOperationsCounter))
+                        );
+                        break;
+                    case AMLLexer.NOT_SUBSET_EQ:
+                        ret = AMLNotSubsetEqNodeGen.create(
+                            ret,
+                            this.visitSetOperations(ctx.setOperations(setOperationsCounter))
+                        );
+                        break;
+                    case AMLLexer.SUPERSET:
+                        ret = AMLSupersetNodeGen.create(
+                            ret,
+                            this.visitSetOperations(ctx.setOperations(setOperationsCounter))
+                        );
+                        break;
+                    case AMLLexer.NOT_SUPERSET:
+                        ret = AMLNotSupersetNodeGen.create(
+                            ret,
+                            this.visitSetOperations(ctx.setOperations(setOperationsCounter))
+                        );
+                        break;
+                    case AMLLexer.SUPERSET_EQ:
+                        ret = AMLSupersetEqNodeGen.create(
+                            ret,
+                            this.visitSetOperations(ctx.setOperations(setOperationsCounter))
+                        );
+                        break;
+                    case AMLLexer.NOT_SUPERSET_EQ:
+                        ret = AMLNotSupersetEqNodeGen.create(
+                            ret,
+                            this.visitSetOperations(ctx.setOperations(setOperationsCounter))
+                        );
+                        break;
+                    default:
+                        throw new AMLParserException("Unsupported term operation");
+                }
+
+                setOperationsCounter++;
+                childrenCounter = childrenCounter + 2;
+            }
+
+            return ret;
+        }
     }
 
     @Override
     public AMLBaseNode visitSetOperations(AMLParser.SetOperationsContext ctx) {
-        return this.visitSetUnary(ctx.setUnary(0));
+        if (ctx.getChildCount() == 1) {
+            return this.visitSetUnary(ctx.setUnary(0));
+        } else {
+            AMLBaseNode ret = this.visitSetUnary(ctx.setUnary(0));
+
+            int setUnaryCounter = 1;
+            int childrenCounter = 1;
+
+            while (childrenCounter < ctx.getChildCount()) {
+                var op = (TerminalNode) ctx.getChild(childrenCounter);
+
+                switch (op.getSymbol().getType()) {
+                    case AMLLexer.INTERSECTION:
+                        ret = AMLIntersectionNodeGen.create(
+                            ret,
+                            this.visitSetUnary(ctx.setUnary(setUnaryCounter))
+                        );
+                        break;
+                    case AMLLexer.UNION:
+                        ret = AMLUnionNodeGen.create(
+                            ret,
+                            this.visitSetUnary(ctx.setUnary(setUnaryCounter))
+                        );
+                        break;
+                    case AMLLexer.BACKWARD_SLASH:
+                        ret = AMLDifferenceNodeGen.create(
+                            ret,
+                            this.visitSetUnary(ctx.setUnary(setUnaryCounter))
+                        );
+                        break;
+                    default:
+                        throw new AMLParserException("Unsupported term operation");
+                }
+
+                setUnaryCounter++;
+                childrenCounter = childrenCounter + 2;
+            }
+
+            return ret;
+        }
     }
 
     @Override
     public AMLBaseNode visitSetUnary(AMLParser.SetUnaryContext ctx) {
+        if (ctx.cardinality() != null) {
+            return AMLCardinalityNodeGen.create(
+                this.visitSetPrimary(ctx.cardinality().setPrimary())
+            );
+        }
+
         return this.visitSetPrimary(ctx.setPrimary());
     }
 
@@ -536,8 +650,8 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
             return this.visitSetLiteral(ctx.setLiteral());
         } else if (ctx.setEllipsis() != null) {
             return this.visitSetEllipsis(ctx.setEllipsis());
-        } else if (ctx.expression() != null) {
-            return this.visitExpression(ctx.expression());
+        } else if (ctx.logicEquivalence() != null) {
+            return this.visitLogicEquivalence(ctx.logicEquivalence());
         }
 
         return AMLReadVariableNodeGen.create(

@@ -34,7 +34,7 @@ numNegation      : MINUS numPrimary ;
 factorial        : numPrimary EXCLAMATION_MARK ;
 floor            : LEFT_FLOOR numPrimary RIGHT_FLOOR ;
 ceil             : LEFT_CEIL numPrimary RIGHT_CEIL ;
-numPrimary       : call | number | IDENTIFIER | LEFT_PAREN expression LEFT_PAREN ;
+numPrimary       : call | number | IDENTIFIER | LEFT_PAREN logicEquivalence LEFT_PAREN;
 number           : NUMBER (DOT NUMBER)? ;
 
 // Set rules
@@ -42,7 +42,7 @@ setComparison    : setOperations ((SUBSET | NOT_SUBSET | SUBSET_EQ | NOT_SUBSET_
 setOperations    : setUnary ((UNION | INTERSECTION | BACKWARD_SLASH) setUnary)* ;
 setUnary         : cardinality | setPrimary ;
 cardinality      : BAR setPrimary BAR ;
-setPrimary       : call | setLiteral | setEllipsis | IDENTIFIER | LEFT_PAREN expression RIGHT_PAREN ;
+setPrimary       : call | setLiteral | setEllipsis | IDENTIFIER | LEFT_PAREN logicEquivalence RIGHT_PAREN ;
 setLiteral       : LEFT_BRACE ((logicEquivalence COMMA)* logicEquivalence)? RIGHT_BRACE ;
 setEllipsis      : LEFT_BRACE numUnary COMMA ELLIPSIS COMMA numUnary RIGHT_BRACE ;
 

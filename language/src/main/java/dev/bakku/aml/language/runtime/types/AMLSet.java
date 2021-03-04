@@ -6,29 +6,66 @@ import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @ExportLibrary(InteropLibrary.class)
-public class AMLSet<T extends AMLObject> implements TruffleObject, AMLObject {
-    private final Set<T> set;
+public class AMLSet implements TruffleObject, AMLObject {
+    private final Set<AMLObject> set;
 
-    private AMLSet(Set<T> set) {
+    private AMLSet(Set<AMLObject> set) {
         this.set = set;
     }
 
-    public static <T extends AMLObject> AMLSet<T> of(T... values) {
-        return new AMLSet<>(Set.of(values));
+    public static AMLSet of(AMLObject... values) {
+        return new AMLSet(Set.of(values));
     }
 
-    public AMLSet<T> intersect(AMLSet<T> other) {
+    public AMLSet intersect(AMLSet other) {
         var result = new HashSet<>(other.set);
         result.retainAll(this.set);
-        return new AMLSet<>(result);
+        return new AMLSet(result);
+    }
+
+    public AMLSet union(AMLSet other) {
+        var result = new HashSet<>(other.set);
+        result.addAll(this.set);
+        return new AMLSet(result);
+    }
+
+    public AMLSet difference(AMLSet other) {
+        var result = new HashSet<>(this.set);
+        result.removeAll(other.set);
+        return new AMLSet(result);
+    }
+
+    public AMLBoolean isSubset(AMLSet right) {
+        var rightIncludesAll = set.stream()
+            .allMatch(o -> right.contains(o).isTrue());
+
+        return AMLBoolean.of(rightIncludesAll && !this.equals(right));
     }
 
     public AMLBoolean contains(AMLObject o) {
         return AMLBoolean.of(set.contains(o));
+    }
+
+    public AMLNumber cardinality() {
+        return AMLNumber.of(set.size());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AMLSet amlSet = (AMLSet) o;
+        return Objects.equals(set, amlSet.set);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(set);
     }
 
     @ExportMessage
