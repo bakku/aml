@@ -5,38 +5,37 @@ import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @ExportLibrary(InteropLibrary.class)
 public class AMLSet implements TruffleObject, AMLObject {
-    private final Set<AMLObject> set;
+    private final LinkedHashSet<AMLObject> set;
 
-    private AMLSet(Set<AMLObject> set) {
+    private AMLSet(LinkedHashSet<AMLObject> set) {
         this.set = set;
     }
 
     public static AMLSet of(AMLObject... values) {
-        return new AMLSet(Set.of(values));
+        var s = new LinkedHashSet<>(Arrays.asList(values));
+        return new AMLSet(s);
     }
 
     public AMLSet intersect(AMLSet other) {
-        var result = new HashSet<>(other.set);
+        var result = new LinkedHashSet<>(other.set);
         result.retainAll(this.set);
         return new AMLSet(result);
     }
 
     public AMLSet union(AMLSet other) {
-        var result = new HashSet<>(other.set);
+        var result = new LinkedHashSet<>(other.set);
         result.addAll(this.set);
         return new AMLSet(result);
     }
 
     public AMLSet difference(AMLSet other) {
-        var result = new HashSet<>(this.set);
+        var result = new LinkedHashSet<>(this.set);
         result.removeAll(other.set);
         return new AMLSet(result);
     }

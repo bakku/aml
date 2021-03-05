@@ -2,6 +2,7 @@ package dev.bakku.aml.language.runtime.types;
 
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.TruffleObject;
+import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 
@@ -59,6 +60,71 @@ public class AMLFraction implements TruffleObject, AMLObject {
 
     public AMLNumber toNumber() {
         return this.numerator.divide(this.denominator);
+    }
+
+    @ExportMessage
+    public boolean isNumber() {
+        return toNumber().isNumber();
+    }
+
+    @ExportMessage
+    public boolean fitsInByte() {
+        return toNumber().fitsInByte();
+    }
+
+    @ExportMessage
+    public boolean fitsInShort() {
+        return toNumber().fitsInShort();
+    }
+
+    @ExportMessage
+    public boolean fitsInInt() {
+        return toNumber().fitsInInt();
+    }
+
+    @ExportMessage
+    public boolean fitsInLong() {
+        return toNumber().fitsInLong();
+    }
+
+    @ExportMessage
+    public boolean fitsInFloat() {
+        return toNumber().fitsInFloat();
+    }
+
+    @ExportMessage
+    public boolean fitsInDouble() {
+        return toNumber().fitsInDouble();
+    }
+
+    @ExportMessage
+    public byte asByte() throws UnsupportedMessageException {
+        return toNumber().asByte();
+    }
+
+    @ExportMessage
+    public short asShort() throws UnsupportedMessageException {
+        return toNumber().asShort();
+    }
+
+    @ExportMessage
+    public int asInt() throws UnsupportedMessageException {
+        return toNumber().asInt();
+    }
+
+    @ExportMessage
+    public long asLong() throws UnsupportedMessageException {
+        return toNumber().asLong();
+    }
+
+    @ExportMessage
+    public float asFloat() throws UnsupportedMessageException {
+        return toNumber().asFloat();
+    }
+
+    @ExportMessage
+    public double asDouble() throws UnsupportedMessageException {
+        return toNumber().asDouble();
     }
 
     @ExportMessage

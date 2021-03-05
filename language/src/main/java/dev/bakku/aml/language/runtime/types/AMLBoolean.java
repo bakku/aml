@@ -2,6 +2,7 @@ package dev.bakku.aml.language.runtime.types;
 
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.TruffleObject;
+import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 
@@ -65,6 +66,16 @@ public class AMLBoolean implements TruffleObject, AMLObject {
     @Override
     public int hashCode() {
         return Objects.hash(value);
+    }
+
+    @ExportMessage
+    public boolean isBoolean() {
+        return true;
+    }
+
+    @ExportMessage
+    public boolean asBoolean() {
+        return value;
     }
 
     @ExportMessage

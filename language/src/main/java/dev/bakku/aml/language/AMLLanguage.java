@@ -44,4 +44,9 @@ public class AMLLanguage extends TruffleLanguage<AMLContext> {
             );
         }
     }
+
+    @Override
+    protected Object getScope(AMLContext context) {
+        return new AMLGlobalScope(context);
+    }
 }

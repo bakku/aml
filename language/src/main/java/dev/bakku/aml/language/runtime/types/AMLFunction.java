@@ -11,6 +11,7 @@ import dev.bakku.aml.language.nodes.functions.AMLWriteFunctionArgumentNode;
 import dev.bakku.aml.language.runtime.AMLRuntimeException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @ExportLibrary(InteropLibrary.class)
@@ -60,7 +61,17 @@ public class AMLFunction implements TruffleObject, AMLInvokable, AMLObject {
     }
 
     @ExportMessage
-    public Object execute(Object[] arguments) throws UnsupportedTypeException, ArityException, UnsupportedMessageException {
-        return invoke(arguments);
+    public Object execute(Object[] arguments) throws UnsupportedMessageException, UnsupportedTypeException, ArityException {
+        if (arguments.length != arity()) {
+            throw ArityException.create(arity(), arguments.length);
+        }
+
+        List<AMLObject> args = new ArrayList<>();
+
+        for (var arg : arguments) {
+            args.add(HostToAMLConverter.convert(arg));
+        }
+
+        return invoke(args.toArray(Object[]::new));
     }
 }
