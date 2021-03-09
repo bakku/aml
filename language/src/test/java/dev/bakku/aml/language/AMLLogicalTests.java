@@ -139,4 +139,18 @@ public class AMLLogicalTests {
         var result = evalCode(code);
         assertAMLBoolean(false, result);
     }
+
+    @Test
+    public void negationMustMakeFalseToTrue() {
+        var code = "¬(1 = 2);";
+        var result = evalCode(code);
+        assertAMLBoolean(true, result);
+    }
+
+    @Test
+    public void negationMustMakeTrueToFalse() {
+        var code = "¬(1 = 1);";
+        var result = evalCode(code);
+        assertAMLBoolean(false, result);
+    }
 }

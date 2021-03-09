@@ -7,7 +7,7 @@ import dev.bakku.aml.language.runtime.types.AMLFraction;
 import dev.bakku.aml.language.runtime.types.AMLNumber;
 
 @NodeChild("child")
-public abstract class AMLNegationNode extends AMLBaseNode {
+public abstract class AMLNumNegationNode extends AMLBaseNode {
     @Specialization
     protected AMLNumber negateNumber(AMLNumber number) {
         return number.multiply(AMLNumber.of(-1));

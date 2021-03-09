@@ -228,11 +228,11 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
     @Override
     public AMLBaseNode visitEquality(AMLParser.EqualityContext ctx) {
         if (ctx.getChildCount() == 1) {
-            return this.visitComparison(ctx.comparison(0));
+            return this.visitNegation(ctx.negation(0));
         } else {
-            AMLBaseNode ret = this.visitComparison(ctx.comparison(0));
+            AMLBaseNode ret = this.visitNegation(ctx.negation(0));
 
-            int comparisonCounter = 1;
+            int negationCounter = 1;
             int childrenCounter = 1;
 
             while (childrenCounter < ctx.getChildCount()) {
@@ -242,25 +242,34 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
                     case AMLLexer.EQ:
                         ret = AMLEqualNodeGen.create(
                             ret,
-                            this.visitComparison(ctx.comparison(comparisonCounter))
+                            this.visitNegation(ctx.negation(negationCounter))
                         );
                         break;
                     case AMLLexer.NEQ:
                         ret = AMLNotEqualNodeGen.create(
                             ret,
-                            this.visitComparison(ctx.comparison(comparisonCounter))
+                            this.visitNegation(ctx.negation(negationCounter))
                         );
                         break;
                     default:
                         throw new AMLParserException("Unsupported term operation");
                 }
 
-                comparisonCounter++;
+                negationCounter++;
                 childrenCounter = childrenCounter + 2;
             }
 
             return ret;
         }
+    }
+
+    @Override
+    public AMLBaseNode visitNegation(AMLParser.NegationContext ctx) {
+        if (ctx.NEGATION() != null) {
+            return AMLNegationNodeGen.create(this.visitComparison(ctx.comparison()));
+        }
+
+        return this.visitComparison(ctx.comparison());
     }
 
     @Override
@@ -459,7 +468,7 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
 
     @Override
     public AMLBaseNode visitNumNegation(AMLParser.NumNegationContext ctx) {
-        return AMLNegationNodeGen.create(this.visitNumPrimary(ctx.numPrimary()));
+        return AMLNumNegationNodeGen.create(this.visitNumPrimary(ctx.numPrimary()));
     }
 
     @Override

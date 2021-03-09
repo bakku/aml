@@ -14,7 +14,8 @@ logicImplication : logicOr (IMPLICATION logicOr)* ;
 logicOr          : logicXOr (OR logicXOr)* ;
 logicXOr         : logicAnd (XOR logicAnd)* ;
 logicAnd         : equality (AND equality)* ;
-equality         : comparison ((EQ | NEQ) comparison)* ;
+equality         : negation ((EQ | NEQ) negation)* ;
+negation         : comparison | (NEGATION comparison) ;
 comparison       : quantification | numComparison | setComparison ;
 
 // Quantification
@@ -56,6 +57,7 @@ IMPLICATION      : '⇒' ;
 OR               : '∨' ;
 XOR              : '⊕' ;
 AND              : '∧' ;
+NEGATION         : '¬' ;
 ELEMENT          : '∈' ;
 UNIVERSAL        : '∀' ;
 EXISTENTIAL      : '∃' ;
