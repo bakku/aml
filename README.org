@@ -1,0 +1,29 @@
+* AML - A Mathematical Language
+
+AML is a small DSL written on top of GraalVM and its Truffle framework. Read the [[./Specification.org][Specification]] for information about its features.
+
+** Modules
+
+The language is structured in four modules:
+
+- *language:* contains the language implementation and tests.
+- *polyglot:* exemplifies how to use the DSL with Java.
+- *repl:* a small REPL to try out the DSL.
+- *runner:* provides an executable to run a AML file.
+
+** Development
+
+The only required dependency is GraalVM version 21.0.0 which can be downloaded from the official [[https://graalvm.org][GraalVM website]]. After downloading it and pointing the ~JAVA_HOME~ environment variable to it you are ready to go.
+
+To build the project, a maven wrapper is available for both windows and unix systems. The following command compiles all code, executes the tests and builds all necessary JAR files:
+
+#+BEGIN_SRC sh
+  # On windows use mwnw.cmd instead of mwnw
+  $ ./mwnw package
+#+END_SRC
+
+To actually use AML there are different possibilities:
+
+- *Using a REPL:* the ~repl~ script provides the ability for both windows and unix to start a REPL and try out AML.
+- *Evaluating a source file:* the ~runner~ script expects a file path as input and executes the file. Look at the ~samples~ of the repository for some example files.
+- *Embedding the DSL:* to use the DSL as an embedded language through GraalVM a component has to be created first and installed using the Graal Updater tool. The ~make_component.sh~, ~install_component.sh~ and ~remove_component.sh~ script show how this can be achieved. Furthermore the ~polyglot~ module, ~polyglot.rb~ and ~polyglot.clj~ show how AML can be embedded using different languages.

@@ -1,1 +1,0 @@
-# AML - A mathematical language
