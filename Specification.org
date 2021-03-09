@@ -1,6 +1,6 @@
 * AML Specification
 
-This document serves as an informal specification of AML (A mathematical language). It provides a high-level overview of all syntactic constructs of AML and its supported operations. Furthermore, it explains the grammar of the language.
+This document serves as an informal specification of AML (A mathematical language). It provides a high-level overview of all syntactic constructs of AML and its supported operations.
 
 AML is an immutable, NULL-less, and dynamically typed programming language for writing concise mathematical expressions with the help of unicode.
 
@@ -9,11 +9,6 @@ Currently AML offers capabilities for:
 - Loads of arithmetic operations or mathematical functions
 - Set theory
 - Logical expressions
-
-In the future, AML should furthermore support:
-
-- Vector operations
-- Matrix operations
 
 ** Features
 
@@ -56,14 +51,14 @@ The foundational construct in AML is an expression. There are many different typ
 
 #+BEGIN_SRC
 -- Intersect two sets
-{1, 2, 3} ∩ {3, 4, 5}
+{1, 2, 3} ∩ {3, 4, 5};
 
 -- Add two fractions
-1/2 + 4/3
+1/2 + 4/3;
 
 -- Predicates
-(A ∧ B) ⊕ (C ∨ ¬D)
-∀(x ∈ X: x ≥ 10)
+(A ∧ B) ⊕ (C ∨ ¬D);
+∀(x ∈ X: x ≥ 10);
 #+END_SRC
 
 *** Assignments
@@ -71,54 +66,31 @@ The foundational construct in AML is an expression. There are many different typ
 With an assignment the result of an expression is stored in a variable. The return value of an assignment is the value which was assigned.
 
 #+BEGIN_SRC 
-A ← 1/2 · 1/2
-#+END_SRC
-
-*** Conditionals
-
-AML supports a standard *if-else* condition similar to other programming languages. In AML the conditional expression must result in a boolean, only true or false are really true or false.
-
-#+BEGIN_SRC 
-if x = 5
-  x ÷ 2
-else
-  x · 2
-end
+A ← 1/2 · 1/2;
 #+END_SRC
 
 *** Functions
 
-A function is an assemblage of expressions where the result of the last expression of the function marks the returned value of the function.
+A function is an expression that can be executed with different inputs.
 
 #+BEGIN_SRC 
-function allEven(S)
-  ∀(x ∈ S: x mod 2 = 0)
-end
+allEven: (S) → ∀(x ∈ S: x mod 2 = 0);
+halfOfCircleArea: (r) → 1/2 · π · r ^ 2;
 
-function halfOfCircleArea(r)
-  area ← π · r ^ 2
-  1/2 · area
-end
-
--- call a function
-allEven({1, 2, 3})
+-- evaluate a function
+allEven({1, 2, 3});
 #+END_SRC
 
-*** Libraries
+*** Conditionals
 
-A library groups multiple functions together in order to use them from a different host language. A library is comparable to a class containing static methods in the land of OOP languages.
+Functions also support conditionals.
 
 #+BEGIN_SRC 
-library circleFunctions
-  function area(r)
-    π · r ^ 2
-  end
-
-  function diameter(r)
-    2 · r
-  end
-end
+f: (x) →
+  if x = 5: x ÷ 2
+  otherwise: x · 2;
 #+END_SRC
+
 
 ** List of operations
 
@@ -154,12 +126,6 @@ end
 
 -- negation
 -5
-
--- logarithm base 10
-log(5)
-
--- natural logarithm
-ln(5)
 #+END_SRC
 
 *** Comparisons
