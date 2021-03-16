@@ -35,7 +35,7 @@ numNegation      : MINUS numPrimary ;
 factorial        : numPrimary EXCLAMATION_MARK ;
 floor            : LEFT_FLOOR numPrimary RIGHT_FLOOR ;
 ceil             : LEFT_CEIL numPrimary RIGHT_CEIL ;
-numPrimary       : call | number | IDENTIFIER | LEFT_PAREN logicEquivalence LEFT_PAREN;
+numPrimary       : call | number | IDENTIFIER | LEFT_PAREN logicEquivalence RIGHT_PAREN;
 number           : NUMBER (DOT NUMBER)? ;
 
 // Set rules
