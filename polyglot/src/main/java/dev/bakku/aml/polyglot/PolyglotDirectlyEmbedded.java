@@ -4,12 +4,12 @@ import org.graalvm.polyglot.Context;
 
 import java.util.List;
 
-public class Polyglot {
+public class PolyglotDirectlyEmbedded {
     private static String AML_ID = "aml";
 
     public static void main(String[] args) {
         var ctx = Context.newBuilder(AML_ID)
-            .allowAllAccess(true)
+            .allowAllAccess(true) // necessary so AML can use Java Lists.
             .build();
 
         ctx.eval(AML_ID, "x ← 1 + 2;");

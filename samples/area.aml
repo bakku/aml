@@ -1,5 +1,2 @@
-function area(r)
-  π · r ^ 2;
-end
-
+area: (r) → π · r ^ 2;
 area(5);

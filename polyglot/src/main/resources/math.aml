@@ -1,0 +1,2 @@
+area: (r) → π · r ^ 2;
+circumference: (r) → 2 · π · r;

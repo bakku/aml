@@ -15,3 +15,6 @@ puts result[2].to_i
 
 func = Polyglot.eval('aml', 'f: (x) → x + 1;')
 puts func.(1).to_i
+
+evenFunc = Polyglot.eval('aml', 'even: (S) → ∀(x ∈ S: x mod 2 = 0);')
+puts evenFunc.([1, 2, 3]) == true

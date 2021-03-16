@@ -61,7 +61,8 @@
                   <exclude>junit:junit</exclude>
                   <exclude>org.graalvm.truffle:truffle-api</exclude>
                   <exclude>org.graalvm.truffle:truffle-dsl-processor</exclude>
-                  <exclude>org.graalvm:graal-sdk</exclude>
+                  <exclude>org.graalvm.sdk:graal-sdk</exclude>
+                  <exclude>org.hamcrest:hamcrest-core</exclude>
                 </excludes>
               </artifactSet>
             </configuration>

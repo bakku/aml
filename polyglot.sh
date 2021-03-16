@@ -9,4 +9,4 @@ LANGUAGE_PATH="language/target/language.jar"
 $JAVA_HOME/bin/java \
   -Dtruffle.class.path.append="$LANGUAGE_PATH" \
   -cp "$GRAAL_SDK_PATH":"$POLYGLOT_PATH":"$LANGUAGE_PATH":"$TRUFFLE_API_PATH" \
-  dev.bakku.aml.polyglot.Polyglot
+  dev.bakku.aml.polyglot.PolyglotDirectlyEmbedded
