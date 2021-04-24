@@ -1,9 +1,11 @@
 package dev.bakku.aml.language.runtime.types;
 
-import com.oracle.truffle.api.interop.InteropLibrary;
-import com.oracle.truffle.api.interop.TruffleObject;
+import com.oracle.truffle.api.interop.*;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @ExportLibrary(InteropLibrary.class)
 public class AMLComposedFunction implements TruffleObject, AMLCallable {
@@ -22,6 +24,20 @@ public class AMLComposedFunction implements TruffleObject, AMLCallable {
     @Override
     public int arity() {
         return 1;
+    }
+
+    @ExportMessage
+    public boolean isExecutable() {
+        return true;
+    }
+
+    @ExportMessage
+    public Object execute(Object[] arguments) throws UnsupportedMessageException, UnsupportedTypeException, ArityException {
+        if (arguments.length != arity()) {
+            throw ArityException.create(arity(), arguments.length);
+        }
+
+        return invoke(HostToAMLConverter.convert(arguments[0]));
     }
 
     @ExportMessage
