@@ -6,19 +6,13 @@ import dev.bakku.aml.language.runtime.AMLRuntimeException;
 import dev.bakku.aml.language.runtime.types.*;
 
 public class AMLSetBuilderNode extends AMLBaseNode {
-    private String identifier;
     @Child
     private AMLBaseNode initializer;
-    @Child
-    private AMLBaseNode body;
-    private AMLFunction bodyFunc;
+    private AMLLambda lambda;
 
     public AMLSetBuilderNode(String identifier, AMLBaseNode initializer, AMLBaseNode body) {
-        this.identifier = identifier;
         this.initializer = initializer;
-        this.body = body;
-        this.bodyFunc = new AMLFunction("anon", this.body, new String[] { identifier });
-
+        this.lambda = new AMLLambda(body, new String[] { identifier });
     }
 
     @Override
@@ -37,7 +31,7 @@ public class AMLSetBuilderNode extends AMLBaseNode {
     }
 
     private AMLBoolean invokeBody(AMLObject obj) {
-        var result = bodyFunc.invoke(obj);
+        var result = lambda.invoke(obj);
 
         if (result instanceof AMLError) {
             throw new AMLRuntimeException(((AMLError) result).getMessage());

@@ -23,7 +23,7 @@ public class AMLSetLiteralNode extends AMLBaseNode {
             .distinct()
             .map(o -> {
                 if (!(o instanceof AMLObject)) {
-                    throw new AMLRuntimeException("only sets, numbers, fractions, functions, and booleans are allowed as elements of a set");
+                    throw new AMLRuntimeException("only sets, numbers, fractions, and booleans are allowed as elements of a set");
                 }
 
                 return (AMLObject) o;

@@ -1,51 +1,41 @@
 package dev.bakku.aml.language.nodes.functions;
 
-import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import dev.bakku.aml.language.nodes.AMLBaseNode;
-import dev.bakku.aml.language.nodes.variables.AMLReadVariableNode;
 import dev.bakku.aml.language.runtime.AMLRuntimeException;
+import dev.bakku.aml.language.runtime.types.AMLCallable;
 import dev.bakku.aml.language.runtime.types.AMLError;
-import dev.bakku.aml.language.runtime.types.AMLInvokable;
+
+import java.util.Arrays;
 
 public class AMLCallNode extends AMLBaseNode {
-    private MaterializedFrame globalFrame;
-    private String identifier;
+    @Child private AMLBaseNode callableVar;
+    @Children private AMLBaseNode[] arguments;
 
-    @Children
-    private AMLBaseNode[] arguments;
-
-    public AMLCallNode(MaterializedFrame globalFrame, String identifier, AMLBaseNode[] arguments) {
-        this.globalFrame = globalFrame;
-        this.identifier = identifier;
+    public AMLCallNode(AMLBaseNode callableVar, AMLBaseNode[] arguments) {
+        this.callableVar = callableVar;
         this.arguments = arguments;
     }
 
     @Override
     public Object executeGeneric(VirtualFrame frame) {
-        Object[] evaledArgs = new Object[arguments.length];
+        var evaledArgs = Arrays.stream(arguments)
+            .map(a -> a.executeGeneric(frame))
+            .toArray();
 
-        for (int i = 0; i < arguments.length; i++) {
-            evaledArgs[i] = this.arguments[i].executeGeneric(frame);
-        }
+        var result = retrieveFunction(frame).invoke(evaledArgs);
 
-        var func = retrieveFunction(frame);
-        var result = func.invoke(evaledArgs);
-
-        if (result instanceof AMLError) {
+        if (result instanceof AMLError)
             throw new AMLRuntimeException(((AMLError) result).getMessage());
-        }
 
         return result;
     }
 
-    private AMLInvokable retrieveFunction(VirtualFrame localFrame) {
-        var obj = AMLReadVariableNode.tryRead(localFrame, globalFrame, identifier);
-
-        if (!(obj instanceof AMLInvokable)) {
+    private AMLCallable retrieveFunction(VirtualFrame localFrame) {
+        var obj = callableVar.executeGeneric(localFrame);
+        if (!(obj instanceof AMLCallable))
             throw new AMLRuntimeException("attempt to call something which is not a function");
-        }
 
-        return (AMLInvokable) obj;
+        return (AMLCallable) obj;
     }
 }

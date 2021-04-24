@@ -1,6 +1,6 @@
 grammar AML;
 
-program          : (function | expression+)+ ;
+program          : (function | expression)+ ;
 function         : IDENTIFIER COLON LEFT_PAREN params RIGHT_PAREN RIGHT_ARROW expression ;
 params           : IDENTIFIER? | (IDENTIFIER COMMA)+ IDENTIFIER ;
 expression       : (ifcond | assignment) SEMICOLON ;
@@ -107,9 +107,10 @@ IF               : 'if' ;
 OTHERWISE        : 'otherwise' ;
 NUMBER           : [0-9]+ ;
 IDENTIFIER       : LETTER (LETTER | [0-9])* ;
-LETTER           : [a-zA-Z] | GREEK_LETTERS | SYMBOLS ;
+LETTER           : [a-zA-Z] | GREEK_LETTERS | SYMBOLS | PHONETIC_EXT ;
 GREEK_LETTERS    : '\u0391'..'\u03CE' ;
-SYMBOLS          : '\u22A4' | '\u22A5' | '\'' ;
+SYMBOLS          : '\u2200'..'\u22FF' | '\'' ;
+PHONETIC_EXT     : '\u1D00'..'\u1D7F';
 WHITESPACE       : (' ' | '\t') -> skip ;
 COMMENT          : '--' .*? NEWLINE -> skip;
 NEWLINE          : '\r'? '\n' -> skip;

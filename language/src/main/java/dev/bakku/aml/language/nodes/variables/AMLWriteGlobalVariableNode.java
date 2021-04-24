@@ -13,21 +13,25 @@ import java.util.Objects;
 
 @NodeChild("value")
 @NodeField(name = "globalFrame", type = MaterializedFrame.class)
-@NodeField(name = "slot", type = FrameSlot.class)
+@NodeField(name = "identifier", type = String.class)
 public abstract class AMLWriteGlobalVariableNode extends AMLBaseNode {
-    public abstract FrameSlot getSlot();
     public abstract MaterializedFrame getGlobalFrame();
+    public abstract String getIdentifier();
 
     @Specialization
     public Object write(Object value) {
-        try {
-            Objects.requireNonNull(getGlobalFrame().getObject(getSlot()));
-            throw new AMLRuntimeException("rewrite to already defined variable " + getSlot().getIdentifier().toString());
-        } catch (FrameSlotTypeException | NullPointerException e) {
-            // Should happen
+        var slot = getGlobalFrame().getFrameDescriptor().findFrameSlot(getIdentifier());
+
+        if (slot != null) {
+            throw new AMLRuntimeException("attempt to rewrite already defined variable " +
+                getIdentifier());
         }
 
-        getGlobalFrame().setObject(getSlot(), value);
+        getGlobalFrame().setObject(
+            getGlobalFrame().getFrameDescriptor().addFrameSlot(getIdentifier()),
+            value
+        );
+
         return value;
     }
 }

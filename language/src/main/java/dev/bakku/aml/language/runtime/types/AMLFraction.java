@@ -6,6 +6,8 @@ import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 
+import java.util.Objects;
+
 @ExportLibrary(InteropLibrary.class)
 public class AMLFraction implements TruffleObject, AMLObject {
     private final AMLNumber numerator;
@@ -153,6 +155,11 @@ public class AMLFraction implements TruffleObject, AMLObject {
         if (o == null || getClass() != o.getClass()) return false;
         AMLFraction other = (AMLFraction) o;
         return this.toNumber().equals(other.toNumber());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(numerator, denominator);
     }
 
     @Override

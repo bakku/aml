@@ -3,8 +3,8 @@ package dev.bakku.aml.language;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.TruffleLanguage;
-import dev.bakku.aml.language.nodes.generic.AMLReturnErrorNode;
 import dev.bakku.aml.language.nodes.AMLRootNode;
+import dev.bakku.aml.language.nodes.generic.AMLReturnErrorNode;
 import dev.bakku.aml.language.parser.AMLParserException;
 import dev.bakku.aml.language.parser.AMLSyntaxTreeParser;
 import dev.bakku.aml.language.runtime.types.AMLError;
@@ -32,7 +32,7 @@ public class AMLLanguage extends TruffleLanguage<AMLContext> {
     }
 
     @Override
-    protected CallTarget parse(ParsingRequest request) throws Exception {
+    protected CallTarget parse(ParsingRequest request) {
         try {
             var node = AMLSyntaxTreeParser.parseTree(getCurrentContext(AMLLanguage.class), request.getSource());
             return Truffle.getRuntime().createCallTarget(

@@ -9,32 +9,27 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 public abstract class AMLQuantificationNode extends AMLBaseNode {
-    protected String identifier;
     @Child
     protected AMLBaseNode initializer;
-    @Child
-    protected AMLBaseNode body;
-    private AMLFunction bodyFunc;
+    private AMLLambda lambda;
 
     protected AMLQuantificationNode(String identifier, AMLBaseNode initializer, AMLBaseNode body) {
-        this.identifier = identifier;
         this.initializer = initializer;
-        this.body = body;
-        this.bodyFunc = new AMLFunction("anon", this.body, new String[] { identifier });
+        this.lambda = new AMLLambda(body, new String[] { identifier });
     }
 
-    protected AMLBoolean execute(VirtualFrame frame, Function<Stream<AMLObject>, Boolean> singleQuantification) {
+    protected AMLBoolean execute(VirtualFrame frame, Function<Stream<AMLObject>, Boolean> quantification) {
         var initObj = initializer.executeGeneric(frame);
 
         if (!(initObj instanceof AMLSet)) {
             throw new AMLRuntimeException("only sets are allowed as quantification initializer");
         }
 
-        return AMLBoolean.of(singleQuantification.apply(((AMLSet) initObj).stream()));
+        return AMLBoolean.of(quantification.apply(((AMLSet) initObj).stream()));
     }
 
     protected AMLBoolean invokeBody(AMLObject obj) {
-        var result = bodyFunc.invoke(obj);
+        var result = lambda.invoke(obj);
 
         if (result instanceof AMLError) {
             throw new AMLRuntimeException(((AMLError) result).getMessage());

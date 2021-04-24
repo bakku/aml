@@ -17,6 +17,7 @@ import java.util.Objects;
 public class AMLNumber implements TruffleObject, AMLObject {
     private static final int PRECISION = 100;
     public static final AMLNumber PI = AMLNumber.of(BigDecimalMath.pi(new MathContext(PRECISION)));
+    public static final AMLNumber E = AMLNumber.of(BigDecimalMath.e(new MathContext(PRECISION)));
 
     private final BigDecimal number;
 
@@ -92,6 +93,14 @@ public class AMLNumber implements TruffleObject, AMLObject {
 
     public AMLBoolean isGreater(AMLNumber other) {
         return AMLBoolean.of(this.number.compareTo(other.number) > 0);
+    }
+
+    public AMLNumber sqrt() {
+        return of(this.number.sqrt(new MathContext(PRECISION)));
+    }
+
+    public BigDecimal unwrap() {
+        return number;
     }
 
     @ExportMessage

@@ -16,7 +16,6 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
     private final AMLContext context;
-    private boolean inNestedScope = false;
 
     public AMLAntlrVisitor(AMLContext context) {
         this.context = context;
@@ -47,17 +46,13 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
             .map(i -> i.getSymbol().getText())
             .toArray(String[]::new);
 
-        inNestedScope = true;
         var bodyNode = this.visitExpression(ctx.expression());
-        inNestedScope = false;
 
         return new AMLDefineFunctionNode(
             ctx.IDENTIFIER().getSymbol().getText(),
             argumentNames,
             bodyNode,
-            context.getGlobalFrame(),
-            this.context.getGlobalFrameDescriptor()
-                .findOrAddFrameSlot(ctx.IDENTIFIER().getSymbol().getText())
+            context.getGlobalFrame()
         );
     }
 
@@ -112,22 +107,11 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
     @Override
     public AMLBaseNode visitAssignment(AMLParser.AssignmentContext ctx) {
         if (ctx.assignment() != null) {
-            if (this.inNestedScope) {
-                return AMLWriteLocalVariableNodeGen.create(
-                    this.visitAssignment(ctx.assignment()),
-                    ctx.IDENTIFIER().getSymbol().getText()
-                );
-            } else {
-                var frameSlot = this.context.getGlobalFrame()
-                    .getFrameDescriptor()
-                    .findOrAddFrameSlot(ctx.IDENTIFIER().getSymbol().getText());
-
-                return AMLWriteGlobalVariableNodeGen.create(
-                    this.visitAssignment(ctx.assignment()),
-                    this.context.getGlobalFrame(),
-                    frameSlot
-                );
-            }
+            return AMLWriteGlobalVariableNodeGen.create(
+                this.visitAssignment(ctx.assignment()),
+                this.context.getGlobalFrame(),
+                ctx.IDENTIFIER().getSymbol().getText()
+            );
         } else if (ctx.composition() != null) {
             return this.visitComposition(ctx.composition());
         } else {
@@ -504,15 +488,18 @@ public class AMLAntlrVisitor extends AMLBaseVisitor<AMLBaseNode> {
 
     @Override
     public AMLBaseNode visitCall(AMLParser.CallContext ctx) {
-        return new AMLCallNode(
+        var functionVar = AMLReadVariableNodeGen.create(
             this.context.getGlobalFrame(),
-            ctx.IDENTIFIER().getSymbol().getText(),
-            ctx.arguments()
-                .logicEquivalence()
-                .stream()
-                .map(this::visitLogicEquivalence)
-                .toArray(AMLBaseNode[]::new)
+            ctx.IDENTIFIER().getSymbol().getText()
         );
+
+        var arguments = ctx.arguments()
+            .logicEquivalence()
+            .stream()
+            .map(this::visitLogicEquivalence)
+            .toArray(AMLBaseNode[]::new);
+
+        return new AMLCallNode(functionVar, arguments);
     }
 
     @Override

@@ -8,7 +8,7 @@ import static dev.bakku.aml.language.TestHelper.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class AMLFunctionTests {
+public class AMLNamedFunctionTests {
     @Test
     public void defineAndCallFunction() {
         var code = "f: (a, b) → a + b;" +

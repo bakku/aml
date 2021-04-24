@@ -7,7 +7,7 @@ import java.nio.charset.Charset;
 
 public class AMLFileDetector implements TruffleFile.FileTypeDetector {
     @Override
-    public String findMimeType(TruffleFile file) throws IOException {
+    public String findMimeType(TruffleFile file) {
         var name = file.getName();
 
         if (name != null && name.endsWith(".aml")) {
@@ -18,7 +18,7 @@ public class AMLFileDetector implements TruffleFile.FileTypeDetector {
     }
 
     @Override
-    public Charset findEncoding(TruffleFile file) throws IOException {
+    public Charset findEncoding(TruffleFile file) {
         return null;
     }
 }

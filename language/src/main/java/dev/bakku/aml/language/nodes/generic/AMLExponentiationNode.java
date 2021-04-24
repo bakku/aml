@@ -30,7 +30,7 @@ public abstract class AMLExponentiationNode extends AMLBaseNode {
     }
 
     @Specialization
-    protected AMLInvokable iteratedFunction(AMLFunction func, AMLNumber right) {
+    protected AMLIteratedFunction iteratedFunction(AMLCallable func, AMLNumber right) {
         if (right.isSmaller(AMLNumber.of(1)).isTrue()) {
             throw new AMLRuntimeException("cannot iterate a function less than 1 times");
         }

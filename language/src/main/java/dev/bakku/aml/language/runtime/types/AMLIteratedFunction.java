@@ -6,21 +6,26 @@ import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 
 @ExportLibrary(InteropLibrary.class)
-public class AMLIteratedFunction implements TruffleObject, AMLInvokable, AMLObject {
-    private AMLFunction func;
+public class AMLIteratedFunction implements TruffleObject, AMLCallable {
+    private AMLCallable callable;
     private AMLNumber iterations;
 
-    public AMLIteratedFunction(AMLFunction func, AMLNumber iterations) {
-        this.func = func;
+    public AMLIteratedFunction(AMLCallable callable, AMLNumber iterations) {
+        this.callable = callable;
         this.iterations = iterations;
     }
 
     @Override
+    public int arity() {
+        return this.callable.arity();
+    }
+
+    @Override
     public Object invoke(Object... arguments) {
-        Object retVal = func.invoke(arguments);
+        Object retVal = callable.invoke(arguments);
 
         for (int i = 1; iterations.isGreater(AMLNumber.of(i)).isTrue(); i++) {
-            retVal = func.invoke(retVal);
+            retVal = callable.invoke(retVal);
         }
 
         return retVal;
@@ -28,9 +33,6 @@ public class AMLIteratedFunction implements TruffleObject, AMLInvokable, AMLObje
 
     @ExportMessage
     public Object toDisplayString(boolean allowSideEffects) {
-        return "<iterated_func: " +
-            func.toDisplayString(allowSideEffects) +
-            " ^ " +
-            iterations.toDisplayString(allowSideEffects) + ">";
+        return "<iterated_func>";
     }
 }

@@ -18,10 +18,11 @@ public abstract class AMLReadVariableNode extends AMLBaseNode {
 
     @Specialization
     protected Object read(VirtualFrame frame) {
-        return tryRead(frame, getGlobalFrame(), getIdentifier());
+        return readVar(frame, getGlobalFrame(), getIdentifier());
     }
 
-    public static Object tryRead(VirtualFrame localFrame, MaterializedFrame globalFrame, String identifier) {
+    public Object readVar(VirtualFrame localFrame,
+                                 MaterializedFrame globalFrame, String identifier) {
         try {
             var slot = localFrame.getFrameDescriptor().findFrameSlot(identifier);
             return Objects.requireNonNull(localFrame.getObject(slot));
@@ -31,7 +32,7 @@ public abstract class AMLReadVariableNode extends AMLBaseNode {
         }
     }
 
-    private static Object globalRead(MaterializedFrame globalFrame, String identifier) {
+    private Object globalRead(MaterializedFrame globalFrame, String identifier) {
         try {
             var slot = globalFrame.getFrameDescriptor().findFrameSlot(identifier);
             return Objects.requireNonNull(globalFrame.getObject(slot));

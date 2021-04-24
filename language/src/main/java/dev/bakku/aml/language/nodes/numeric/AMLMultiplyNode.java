@@ -20,12 +20,12 @@ public abstract class AMLMultiplyNode extends AMLBaseNode {
     }
 
     @Specialization
-    protected AMLFraction divideNumberAndFraction(AMLNumber left, AMLFraction right) {
+    protected AMLFraction multiplyNumberAndFraction(AMLNumber left, AMLFraction right) {
         return left.toFraction().multiply(right);
     }
 
     @Specialization
-    protected AMLFraction divideFractionAndNumber(AMLFraction left, AMLNumber right) {
+    protected AMLFraction multiplyFractionAndNumber(AMLFraction left, AMLNumber right) {
         return left.multiply(right.toFraction());
     }
 }

@@ -6,11 +6,10 @@ import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 
 @ExportLibrary(InteropLibrary.class)
-public class AMLComposedFunction implements TruffleObject, AMLInvokable, AMLObject {
-    private AMLFunction outer;
-    private AMLFunction inner;
+public class AMLComposedFunction implements TruffleObject, AMLCallable {
+    private AMLCallable outer, inner;
 
-    public AMLComposedFunction(AMLFunction outer, AMLFunction inner) {
+    public AMLComposedFunction(AMLCallable outer, AMLCallable inner) {
         this.outer = outer;
         this.inner = inner;
     }
@@ -20,11 +19,13 @@ public class AMLComposedFunction implements TruffleObject, AMLInvokable, AMLObje
         return outer.invoke(inner.invoke(arguments));
     }
 
+    @Override
+    public int arity() {
+        return 1;
+    }
+
     @ExportMessage
     public Object toDisplayString(boolean allowSideEffects) {
-        return "<composed_func: " +
-            inner.toDisplayString(allowSideEffects) +
-            " ∘ " +
-            outer.toDisplayString(allowSideEffects) + ">";
+        return "<composed_func>";
     }
 }
