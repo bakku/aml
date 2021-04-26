@@ -12,6 +12,7 @@ import java.math.MathContext;
 public class Nums {
     public static void addNumBuiltIns(AMLContext ctx) {
         addSin(ctx);
+        addCos(ctx);
         addSqrt(ctx);
         addRound(ctx);
     }
@@ -32,6 +33,32 @@ public class Nums {
                     var doubleVal = ((AMLNumber) arguments[0]).unwrap().doubleValue();
 
                     return AMLNumber.of(BigDecimal.valueOf(Math.sin(doubleVal)));
+                }
+
+                @Override
+                public int arity() {
+                    return 1;
+                }
+            }
+        );
+    }
+
+    private static void addCos(AMLContext ctx) {
+        ctx.getGlobalFrame().setObject(
+            ctx.getGlobalFrameDescriptor().addFrameSlot("cos"),
+            new AMLCallable() {
+                @Override
+                public Object invoke(Object... arguments) {
+                    if (arguments.length != arity()) {
+                        throw new AMLRuntimeException("expected " + arity() + " arguments but got " + arguments.length);
+                    }
+
+                    if (!(arguments[0] instanceof AMLNumber))
+                        throw new AMLRuntimeException("expected a number as argument");
+
+                    var doubleVal = ((AMLNumber) arguments[0]).unwrap().doubleValue();
+
+                    return AMLNumber.of(BigDecimal.valueOf(Math.cos(doubleVal)));
                 }
 
                 @Override
